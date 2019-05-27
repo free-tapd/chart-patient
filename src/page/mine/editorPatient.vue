@@ -1,8 +1,7 @@
 <template>
   <div class="user-messgae vg clear-mar">
     <p class="title-waring"> <span class="iconfont icon-jiufuqianbaoicon14"></span> <i>为必填项</i> </p>
-    <cellInput type="1" title="患者姓名" placeholder="请输入姓名" :tColor="'#666'" :isRight="true" :isRquire="true"
-      v-model="sikerMessage.patientName" />
+    <cellInput type="1" title="患者姓名" placeholder="请输入姓名" v-model="sikerMessage.patientName" :tColor="'#666'" :isRight="true" :isRquire="true" />
 
     <!-- <cellInput type="1" title="姓名" placeholder="请输入姓名" :isRight="true"/> -->
     <cellInput type="3" title="性别" :isRight="true" :tColor="'#666'" :isRquire="true" v-if="false">
@@ -17,11 +16,9 @@
     </cellInput>
 
     <cellInput type="4" title="出生日期" :propValue="value2" @click.native="dateShow=!dateShow" :tColor="'#666'"
-      :isRight="true" :isRquire="true" v-if="false" />
-    <cellInput type="1" title="手机号" placeholder="请输入手机号" :tColor="'#666'" :isRight="true" :isRquire="true"
-      v-model="sikerMessage.patientPhone" />
-    <cellInput type="1" title="身份证号" placeholder="请输入身份证号" :tColor="'#666'" :isRight="true" :isRquire="true"
-      v-model="sikerMessage.idCard" />
+      :isRight="true" :isRquire="true"  v-if="false"/>
+    <cellInput type="1" title="手机号" placeholder="请输入手机号" :tColor="'#666'" :isRight="true" :isRquire="true" v-model="sikerMessage.patientPhone"/>
+    <cellInput type="1" title="身份证号" placeholder="请输入身份证号" :tColor="'#666'" :isRight="true"  :isRquire="true" v-model="sikerMessage.idCard"/>
     <div v-transfer-dom>
       <popup v-model="dateShow">
         <datetime-view v-model="value2" confirm-text="确认" cancel-text="取消"></datetime-view>
@@ -40,15 +37,19 @@
         <inline-x-switch v-model="value"></inline-x-switch>
       </div>
     </div>
-    <div class="btn-bg" >
-      <div class="add-btn" @click="addPatient" >
-        确定添加
+    <div class="btn-bg">
+        <div class="cancle-btn" @click.stop="canclePatient(sikerMessage.patientId)">
+            删除就诊人
+        </div>
+      <div class="add-btn" @click.stop="addPatient">
+        保存
       </div>
     </div>
 
   </div>
 </template>
 <script>
+"use strict";
   import {
     VueCropper
   } from 'vue-cropper'
@@ -79,11 +80,7 @@
           outputType: "jpeg || png || webp",
           autoCrop: true
         },
-        sikerMessage: {
-          patientPhone: "",
-          patientName: "",
-          idCard: ""
-        }
+        sikerMessage:{}
       }
     },
     directives: {
@@ -100,24 +97,37 @@
       XButton,
       InlineXSwitch
     },
-    methods: {
-      addPatient() {
-        console.log(this.sikerMessage)
-        // let a ={...this.sickerMessage};
-        // console.log(a)
-        // console.log(a.patientPhone)
-        this.$post('Patient/saveWZPatient', {
-          patientPhone: this.sikerMessage.patientPhone,
-          patientName: this.sikerMessage.patientName,
-          idCard: this.sikerMessage.idCard
-        }).then(res => {
-          if (res.code == 0) {
-            this.$vux.toast.text('已保存', "middle");
-            this.$router.go(-1)
-          }
-        })
-      }
+    created(){
+      // this.sikerMessage=JSON.parse( this.$route.query.sickerMessage);
+      this.$set(this,"sikerMessage",JSON.parse( this.$route.query.sickerMessage))
+    },
+    mounted(){
+      // this.sikerMessage=JSON.parse( this.$route.query.sickerMessage)
+      // console.log(this.s)
+    },
+    methods:{
+        canclePatient(patientId){
+            this.$post('Patient/delPatient',{patientId}).then(res=>{
+                if(res.code==0){
+                    this.$vux.toast.text('已删除',"middle");
+                    this.$router.go(-1)
+                }
+            })
+        },
+        addPatient(){
+          console.log(this.sikerMessage)
+          // let a ={...this.sickerMessage};
+          // console.log(a)
+          // console.log(a.patientPhone)
+          this.$post('Patient/saveWZPatient',{patientPhone:this.sikerMessage.patientPhone,patientName:this.sikerMessage.patientName,idCard:this.sikerMessage.idCard}).then(res=>{
+            if(res.code==0){
+               this.$vux.toast.text('已保存',"middle");
+               this.$router.go(-1)
+            }
+          })
+        }
     }
+
   }
 
 </script>
@@ -130,32 +140,43 @@
   .active-sex1 {
     background-color: #D565B2 !important;
   }
-
-  .btn-bg {
-    height: 134px;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0px 1px 0px 0px rgba(230, 230, 230, 1);
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .btn-bg{
+height:134px;
+background:rgba(255,255,255,1);
+box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
+position: fixed;
+left: 0;
+right: 0;
+bottom: 0;
+display: flex;
+align-items: center;
+justify-content: space-evenly;
   }
-
   .add-btn {
-    width: 670px;
+    width: 440px;
     height: 88px;
     background: #2D9FF1;
     border-radius: 10px;
-    margin: 0 auto;
     font-size: 32px;
     font-weight: 500;
     color: rgba(255, 255, 255, 1);
     line-height: 88px;
     text-align: center;
+    
 
+  }
+  .cancle-btn{
+      width:220px;
+        height:88px;
+        border:1px solid rgba(255,0,0,1);
+        border-radius:10px;
+          font-size: 32px;
+    font-weight: 500;
+   color: #FF0000;
+    line-height: 88px;
+    text-align: center;
+    
+        
   }
 
   .title-waring {

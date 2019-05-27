@@ -2,141 +2,45 @@
   <div class="vg">
 
     <div class="search-inner" ref="searchs">
-      <searchBox :isFocus="isFocus" @focusHandler="focusHandler" @cancleHandle="cancleHandle" />
+      <searchBox :isFocus="isFocus" @focusHandler="focusHandler" :value="searchValue" @cancleHandle="cancleHandle"
+        @input="onInput" />
     </div>
-    <!-- 按需搜索 -->
-    <div class="doctor-container" v-show="false">
-      <div class="search-box">
-        <div class="vux-1px-b fixed-bar" ref="listTop" :style="{top:offset+'px'}">
-          <flexbox>
-            <flexbox-item @click.native="allHandler(v)" v-for=" (v,i) in tabArr" :key="i">
-              <div class="flex-demo" :class="{'active':cur==v.id}">
-                <p>{{v.title}}</p>
-                <span class="icon-top funbg" :class="{'active-icon':cur==v.id}"></span>
-              </div>
-            </flexbox-item>
-            <!-- <flexbox-item @click.native="officeHandler">
-            <div class="flex-demo">
-              <p>科室</p>
-              <span class="icon-top funbg"></span>
-            </div>
-          </flexbox-item>
-          <flexbox-item @click.native="hospitalHandler">
-            <div class="flex-demo">
-              <p>医院</p>
-              <span class="icon-top funbg"></span>
-            </div>
-          </flexbox-item>-->
-          </flexbox>
-        </div>
-        <!-- 按照医院查询 -->
-        <!-- <div :class="{'cover':cur==3}" @click="cur=0"> -->
-        <div class="pannel-search-hospital" ref="overHeight1" v-show="cur==3">
-          <!-- 1 -->
-          <ul class="pannel-left">
-            <li>全部</li>
-            <li>保定</li>
-            <li v-for="(v,i) in 10" :key="v" :class="{'active-item':cur2==i}" @click.stop="cur2=i">邯郸</li>
-          </ul>
-          <!-- 2 -->
-          <ul class="pannel-right">
-            <li class="flex-r" v-for="v in 10" :key="v">
-              <img src="../../assets/images/logo1.png" alt>
-              <div class="hospital-name">
-                <p>河北医科大学第二医院</p>
-                <span>三级甲等</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <!-- </div> -->
-        <!-- 按照科室查询 -->
-        <!-- <div :class="{'cover':cur==2}" @click="cur=0"> -->
-        <div class="pannel-search-hospital pannel-search-department" ref="overHeight" v-show="cur==2">
-          <!-- 1 -->
-          <ul class="pannel-left">
-
-            <li v-for="(v,i) in 10" :key="i" :class="{'active-item':cur1==i}" @click.stop="cur1=i">内科</li>
-          </ul>
-          <!-- 2 -->
-          <ul class="pannel-right">
-            <li class="flex-r" v-for="v in 10" :key="v">
-              <!-- <img src="../../assets/images/logo1.png" alt> -->
-              <div class="hospital-name">
-                <!-- <p>河北医科大学第二医院</p> -->
-                <!-- <span>全部</span> -->
-                泌尿科
-              </div>
-              <p class="online-doctor"> <span>124</span>
-                位医生在线
-              </p>
-            </li>
-          </ul>
-        </div>
-        <!-- </div> -->
-        <div :class="{'cover':cur==1}" @click="cur=0">
-
-          <div class="pannel-search-hospital pannel-search-all" v-show="cur==1">
-            <ul class="choose-from">
-              <li v-for="(v,i) in chooseArr" :key="i">
-                <p class="choose-title">{{v.title}}</p>
-                <div class="choose-list">
-                  <span v-for="(r,j) in v.choose.chooseList" :key="j" :class="{'active-choose':v.choose.cur==j}"
-                    @click.stop="chooseTag(v,j)">{{r.chooseTitle}}</span>
-                  <!-- <span></span> -->
-                </div>
-              </li>
-            </ul>
-            <div class="choose-btn">
-              <span>重置</span>
-              <span>确定</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 医生列表 -->
-      <div class="doctor-box1">
-        <docutorItem v-for="v in 5" :key="v" />
-      </div>
-
-      <!-- <div :class="{'cover':cur==activeId}" @click="cur=0"></div> -->
-      <!-- <Xfooter /> -->
-    </div>
-
     <!-- search history -->
     <div class="container" :style="{top:offset+'px'}">
       <div class="search-content">
         <div class="search-item">
           <p>相关科室</p>
-          <div class="off-list vux-1px-b">
+          <div class="off-list " v-for="(v,i) in searchResult.section" :key="i" v-if="searchResult.section.length>0"
+            @click="jumpSection(v)">
+            <div class="off-name">{{v.name}}</div>
+            <!-- <p class="off-inner">此处是妇产科简介。</p> -->
+            <p class="icon-box">
+              <span class="iconfont icon-right"></span>
+            </p>
+          </div>
+          <!-- <div class="off-list">
             <div class="off-name">妇产科</div>
             <p class="off-inner">此处是妇产科简介。</p>
             <p class="icon-box">
               <span class="iconfont icon-right"></span>
             </p>
-          </div>
-          <div class="off-list">
-            <div class="off-name">妇产科</div>
-            <p class="off-inner">此处是妇产科简介。</p>
-            <p class="icon-box">
-              <span class="iconfont icon-right"></span>
-            </p>
-          </div>
+          </div> -->
           <!-- 没有内容的时候 -->
-          <!-- <span class="no-inner">暂无相关科室</span> -->
+          <span class="no-inner" v-if="searchResult.section.length==0">暂无相关科室</span>
 
         </div>
         <div class="search-item">
           <p>相关医生</p>
-          <!-- <div class="off-list vux-1px-b">
-                    <div class="off-name">妇医生</div>
-                    <p class="off-inner">此处是医生科简介。</p>
-                    <p class="icon-box">
-                        <span class="iconfont icon-right"></span>
-                    </p>
-                </div> -->
+          <div class="off-list" v-for="(v,i) in searchResult.doctor" :key="i" v-if="searchResult.doctor.length>0"
+            @click="changeJump('/doctorHome',{doctorId:v.id})">
+            <div class="off-name">{{v.name}}</div>
+            <!-- <p class="off-inner">此处是医生科简介。</p> -->
+            <p class="icon-box">
+              <span class="iconfont icon-right"></span>
+            </p>
+          </div>
           <!-- 没有内容的时候 -->
-          <span class="no-inner">暂无相关科室</span>
+          <span class="no-inner" v-if="searchResult.doctor.length==0">暂无相关科室</span>
         </div>
 
       </div>
@@ -157,74 +61,17 @@
   export default {
     data() {
       return {
-        tabArr: [{
-            id: 1,
-            title: "综合排序"
-          },
-          {
-            id: 2,
-            title: "全部科室"
-          },
-          {
-            id: 3,
-            title: "全部医院"
-          }
-        ],
-        chooseArr: [{
-            id: 1,
-            title: "按咨询量",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "从高到底",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "从低到高",
-                  isClick: false
-                }
-              ]
-            }
-          },
-          {
-            id: 2,
-            title: "按好评量",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "从高到底",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "从低到高",
-                  isClick: false
-                }
-              ]
-            }
-          },
-          {
-            id: 3,
-            title: "医生状态",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "在线医生",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "全部医生",
-                  isClick: false
-                }
-              ]
-            }
-          }
-        ],
+        searchValue: "",
         cur: 0,
         cur1: 0,
         cur2: 0,
         activeId: -1,
         offset: 0,
-        isFocus: true
+        isFocus: true,
+        searchResult: {
+          doctor: [],
+          section: []
+        }
       };
     },
     components: {
@@ -239,20 +86,26 @@
       console.log(document.getElementsByTagName("body"));
       // document.getElementsByTagName("body")[0].style.overflow = "hidden";
       this.offset = this.$refs.searchs.offsetHeight;
-      document.querySelector('.doctor-container').style.marginTop = this.offset + "px";
+      // document.querySelector('.doctor-container').style.marginTop = this.offset + "px";
       let clientHeight =
         document.body.clientHeight || document.documentElement.clientHeight;
       let screenHeight = window.screen.availHeight;
-      let searchBar = this.$refs.listTop.offsetHeight;
+      // let searchBar = this.$refs.listTop.offsetHeight;
 
 
-      this.$refs.overHeight.style.height = (screenHeight - this.offset - searchBar) + 'px';
-      this.$refs.overHeight1.style.height = (screenHeight - this.offset - searchBar) + 'px';
-      document.querySelector('.doctor-box1').style.marginTop = this.offset + searchBar + "px";
-      document.querySelectorAll('.pannel-search-hospital').forEach(v => {
-        v.style.top = (this.offset + searchBar) + "px";
-      }) //
+      // this.$refs.overHeight.style.height = (screenHeight - this.offset - searchBar) + 'px';
+      // this.$refs.overHeight1.style.height = (screenHeight - this.offset - searchBar) + 'px';
+      // document.querySelector('.doctor-box1').style.marginTop = this.offset + searchBar + "px";
+      // document.querySelectorAll('.pannel-search-hospital').forEach(v => {
+      //   v.style.top = (this.offset + searchBar) + "px";
+      // }) //
+      // document.querySelector('.search-content').style.top=(screenHeight-this.offset)+'px'
 
+    },
+    computed: {
+      platformName() {
+        return this.$store.state.platformName
+      }
     },
     methods: {
       allHandler(v) {
@@ -285,13 +138,66 @@
       },
       cancleHandle(msg) {
         console.log(msg);
-
-
         msg = !msg
-
-
         this.isFocus = msg;
         console.log(this.isFocus);
+        this.searchResult.doctor = [];
+        this.searchResult.section = []
+      },
+      // 搜索
+      onInput(val) {
+        this.$post('Patient/getDoctorOrSection', {
+          platformAccount: this.platformName,
+          search: val
+        }).then(res => {
+          if (res.code == 0) {
+            // console.log(res)
+            // this.searchResult=res.data;
+            let a = [],
+              b = [];
+            res.data.forEach(v => {
+              if (v.type == "section") {
+                // 科室
+                b.push(v)
+              } else if (v.type == "doctor") {
+                // 医生
+                a.push(v)
+              }
+            })
+            this.searchResult.section = b
+            this.searchResult.doctor = a
+
+            // 搜索完成保存当前用户的操作数据
+            this.$store.commit('saveSearchInner', val)
+          }
+        })
+      },
+      // 科室条转
+      jumpSection(item) {
+        // this.changeJump('/indexSearch',{platformName:this.platformName,type:1,sectionId:item.id});
+        // this.$store.commit('saveTab', {sectionName:item.name})
+
+        this.changeJump('/indexSearch', {
+          platformName: this.platformName,
+          type: 2,
+          sectionId: item.sectionId,
+          level: item.level
+        });
+        if (item.type = "section") {
+          if (item.level == '1') {
+            this.saveTab({
+              firstSectionName: item.sectionName,
+              firstSectionId: item.sectionId
+            })
+          } else {
+            this.saveTab({
+              secondSectionName: item.sectionName,
+              secondSectionId: item.sectionId
+            })
+          }
+        }
+
+
       }
     }
   };
@@ -312,6 +218,13 @@
     z-index: 500;
   }
 
+  .container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: scroll;
+  }
 
   .search-inner {
     position: fixed;

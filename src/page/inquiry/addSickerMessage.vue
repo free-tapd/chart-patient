@@ -1,10 +1,10 @@
 <template>
   <div class="user-messgae vg clear-mar">
     <p class="title-waring"> <span class="iconfont icon-jiufuqianbaoicon14"></span> <i>为必填项</i>   </p>
-    <cellInput type="1" title="患者姓名" placeholder="请输入姓名" :tColor="'#666'" :isRight="true" :isRquire="true"/>
+    <cellInput type="1" title="患者姓名" placeholder="请输入姓名" :tColor="'#666'" :isRight="true" :isRquire="true" v-model="user.patientName" :value="user.patientName" @onInput="onInput"/>
 
     <!-- <cellInput type="1" title="姓名" placeholder="请输入姓名" :isRight="true"/> -->
-    <cellInput type="3" title="性别" :isRight="true" :tColor="'#666'" :isRquire="true">
+    <cellInput type="3" title="性别" :isRight="true" :tColor="'#666'" :isRquire="true" v-if="false">
       <ul slot="ismean" class="sex">
         <li :class="{'active-sex':cur==0}" @click="cur=0">
           男
@@ -15,9 +15,9 @@
       </ul>
     </cellInput>
     
-    <cellInput type="4" title="出生日期" :propValue="value2" @click.native="dateShow=!dateShow" :tColor="'#666'" :isRight="true" :isRquire="true"/>
-    <cellInput type="1" title="手机号" placeholder="请输入手机号" :tColor="'#666'" :isRight="true"/>
-    <cellInput type="1" title="身份证号" placeholder="请输入身份证号" :tColor="'#666'" :isRight="true"/>
+    <cellInput type="4" title="出生日期" v-if="false" :propValue="value2" @click.native="dateShow=!dateShow" :tColor="'#666'" :isRight="true" :isRquire="true"/>
+    <cellInput type="1" title="手机号" placeholder="请输入手机号" :tColor="'#666'" :isRight="true" v-model="user.patientPhone"/>
+    <cellInput type="1" title="身份证号" placeholder="请输入身份证号" :tColor="'#666'" :isRight="true" v-model="user.idCard"/>
     <div v-transfer-dom>
       <popup v-model="dateShow">
         <datetime-view v-model="value2" confirm-text="确认" cancel-text="取消"></datetime-view>
@@ -31,7 +31,7 @@
         :autoCrop="autoCrop"></vueCropper>
     </div>
 
-    <div class="add-btn">
+    <div class="add-btn " @click="addSicker">
         确定添加
     </div>
   </div>
@@ -51,6 +51,7 @@
     XButton
 
   } from 'vux'
+import { log } from 'util';
   export default {
     data() {
       return {
@@ -65,6 +66,11 @@
           outputSize: 1,
           outputType: "jpeg || png || webp",
           autoCrop: true
+        },
+        user:{
+          patientName:"",
+          idCard:"",
+          patientPhone:""
         }
       }
     },
@@ -79,6 +85,28 @@
       Group,
       QFpicker,
       VueCropper,XButton
+    },
+    mounted(){
+      // this.addSicker();
+    },
+    methods:{
+      onInput(msg){
+        // console.log(msg)
+        console.log(this.user)
+      },
+      addSicker(){
+        let params={
+          ...this.user
+        };
+         this.$post('Patient/saveWZPatient',params).then(res=>{
+          //  console.log(res)
+          if(res.code==0){
+            // 显示文字
+            this.$vux.toast.text(添加成功, 'middle')
+          }
+         })
+      }
+     
     }
   }
 

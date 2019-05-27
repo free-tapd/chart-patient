@@ -1,7 +1,7 @@
 <template>
     <div class="vg">
       <messageItem :isMar="true" :isSystem="true" @click.native="changeJump('/systemMessage')"/> 
-      <messageItem />
+      <messageItem  @click.native="changeJump('/chartList')"/>
       <messageItem />
       <messageItem />
 
@@ -14,12 +14,17 @@ import messageItem from '@/components/messageItem'
 import { Search } from 'vux'
 export default {
     data(){
-        return {};
+        return {
+            isFooter:0
+        };
     },
     components: {
         Xfooter,
         Search ,
         messageItem
+  },
+  mounted(){
+      this.isFooter=new Number(this.$route.query.isFooter)
   }
 }
 </script>

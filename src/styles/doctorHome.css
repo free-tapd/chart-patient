@@ -59,7 +59,7 @@
   padding-right: 20px !important;
   padding-left: 0 !important;
 }
-.active-recivice > .chart-inner {
+.active-recivice .chart-inner {
   background-color: #fff !important;
   color: #333 !important;
 }
@@ -92,7 +92,7 @@
   display: block;
   border-radius: 50%;
 }
-.chart-box > .chart > .chart-item > .chart-line > .chart-inner {
+.chart-box > .chart > .chart-item > .chart-line > .chart-inner-box > .chart-inner {
   background-color: #3B97D9;
   padding: 27px;
   width: 496px;
@@ -102,6 +102,14 @@
   line-height: 44px;
   color: #fff;
   word-break: break-all;
+}
+.chart-box > .chart > .chart-item > .chart-line > .chart-inner-box > .chart-img {
+  width: 300px;
+}
+.chart-box > .chart > .chart-item > .chart-line > .chart-inner-box > .chart-img > img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 .chart-box > .chart > .chart-item > .chart-warm {
   padding: 25px 33px;
@@ -398,4 +406,116 @@
   font-size: 28px;
   font-weight: 400;
   color: #ffffff;
+}
+.good-at {
+  padding: 35px;
+  width: 530px;
+  height: 650px;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: scroll;
+}
+.good-at > .doc-msg {
+  line-height: 72px;
+}
+.good-at > .doc-msg > h5 {
+  font-size: 38px;
+  font-weight: bold;
+  color: #333333;
+}
+.good-at > .doc-msg > .main-doc {
+  font-size: 24px;
+  font-weight: 400;
+  color: #808080;
+}
+.good-at > .good-at-label > i {
+  font-size: 24px;
+  font-weight: 400;
+  color: #458de6;
+  font-style: normal;
+  display: block;
+  text-align: center;
+  line-height: 41px;
+  margin: 15px 0;
+}
+.good-at > .good-at-label > p {
+  font-size: 24px;
+  color: #666;
+}
+.cover-good {
+  flex-direction: column;
+}
+.close-btn-good-at {
+  width: 80px;
+  height: 80px;
+  display: block;
+  margin: 0 auto;
+  margin-top: 52px;
+  background-image: url('../assets/images/inquiry/hurt_remove.png');
+}
+.server-pannel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 500px;
+  background-color: #fff;
+  background: #ffffff;
+  box-shadow: 0px 1px 0px 0px #e6e6e6;
+  border-radius: 20px 20px 0px 0px;
+}
+.server-pannel > .title-box {
+  position: relative;
+  padding: 32px 0;
+  text-align: center;
+}
+.server-pannel > .title-box > p {
+  font-size: 34px;
+  font-weight: bold;
+  color: #333333;
+}
+.server-pannel > .title-box > span {
+  font-size: 26px;
+  font-weight: 500;
+  color: #333333;
+  position: absolute;
+  right: 30px;
+  top: 36px;
+}
+.server-pannel > .sel-server > li {
+  padding: 15px 30px;
+  display: flex;
+  align-items: flex-start;
+}
+.server-pannel > .sel-server > li > .img-box {
+  flex: 1;
+}
+.server-pannel > .sel-server > li > .img-box > img {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+.server-pannel > .sel-server > li > .server-intro {
+  flex: 6;
+  display: flex;
+  flex-direction: column;
+}
+.server-pannel > .sel-server > li > .server-intro > .f-title {
+  font-size: 30px;
+  font-weight: 500;
+  color: #333333;
+  line-height: 1;
+}
+.server-pannel > .sel-server > li > .server-intro > .s-title {
+  font-size: 24px;
+  font-weight: 400;
+  color: #808080;
+  line-height: 66px;
+}
+.server-pannel > .sel-server > li > .money {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 400;
+  color: #ff6c00;
 }

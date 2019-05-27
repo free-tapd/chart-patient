@@ -226,3 +226,29 @@ ul body {
   /* Internet Explorer 10+ */
   color: #999;
 }
+.no-doctor {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.no-doctor > .bg-image {
+  background-image: url('../assets/images/no-doctor.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  display: block;
+  width: 294px;
+  height: 192px;
+}
+.no-doctor > .no-text {
+  font-size: 30px;
+  color: #999;
+  margin-top: 30px;
+}

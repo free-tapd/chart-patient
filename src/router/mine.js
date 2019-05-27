@@ -4,6 +4,7 @@ import feedback from '@/page/mine/feedback';
 import myDoctor from '@/page/mine/myDoctor';
 import patientList from '@/page/mine/patientList';
 import addPatient from '@/page/mine/addPatient';
+import editorPatient from '@/page/mine/editorPatient';
 
 let router=[
     {
@@ -41,6 +42,12 @@ let router=[
         component:addPatient,
         meta:{
             title:"添加就诊人"
+        }
+    },{
+        path:"/editorPatient",
+        component:editorPatient,
+        meta:{
+            title:"编辑就诊人"
         }
     }
 ]

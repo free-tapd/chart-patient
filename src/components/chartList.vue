@@ -1,10 +1,10 @@
 <template>
   <div class="docutor-list">
     <!-- 医生列表   页面 -->
-    <div class="docutor-message flex-r ">
+    <div class="docutor-message flex-r " @click="jump">
       <div class="img-box">
-        <img src="../assets/images/inquiry/head.jpg" alt>
-        <p class="is-online-box"> <span>在线</span> </p>
+        <img :src="orderItem.doctorImg" alt>
+        <p class="is-online-box"> <span >{{orderItem.online?"在线":"离线"}}</span> </p>
       </div>
       <div class="flex-c profession vux-1px-b">
         <!-- first -->
@@ -12,12 +12,12 @@
           <!-- 医生信息 -->
           <div class="docutor-name">
             <div class="docutor-skill">
-              <p class="docutor-title">李素珍</p>
-              <span class="docutor-grade">主任医师</span>
-              <span class="docutor-partment">消化科</span>
+              <p class="docutor-title">{{orderItem.doctorName}}</p>
+              <span class="docutor-grade">{{orderItem.titleName}}</span>
+              <span class="docutor-partment">{{orderItem.sectionName}}</span>
             </div>
             <!-- 所属医院 -->
-            <p class="hospital-name" >好的，谢谢</p>
+            <!-- <p class="hospital-name" v-if="orderItem.orderState!=1">好的，谢谢</p> -->
             <!-- <div class="score">
               <span class="icon-star-pink funbg"></span>
               <span>5.0</span>
@@ -30,24 +30,21 @@
             <i></i>
             <p>在线</p>
           </div> -->
-          <span class="chart-date"> 09:54:28</span>
+          <span class="chart-date"> {{orderItem.createTime}}</span>
         </div>
         <!-- seconed -->
         <!-- 一生的业务信息 -->
-        <div class="follow-msg flex-r ellipsis" > 您好，我最近感觉痛经，但是以前没有这您好，我最近感觉痛经，但是以前没有这... <span class="badge-box"><badge text="1"></badge></span>
+        <div class="follow-msg flex-r ellipsis" > {{orderItem.content}} <span class="badge-box"><badge text="1"></badge></span>
         </div>
         <!-- 暂未评价 -->
-        <div class="no-evluate"> 
+        <div class="no-evluate" v-if="orderItem.orderState!=1"> 
             <div class="my-eva">
                 <span>我的评价</span>
-                <i class="icon-star-pink funbg"></i>
-                <i class="icon-star-pink funbg"></i>
-                <i class="icon-star-pink funbg"></i>
-                <i class="icon-star-pink funbg"></i>
-                <i class="icon-star-pink funbg"></i>
+                <i class="icon-star-pink funbg" v-for="(num,index) in (orderItem.judgeStars+0) " :key="index"></i>
+               
             </div>
              <div class="zixun-btn">
-            立即咨询
+            再次咨询
           </div>
 
         </div>
@@ -73,9 +70,26 @@
 import {Badge} from "vux";
 
   export default {
+    props:{
+      orderItem:{
+        type:Object,
+        default(){
+          return {}
+        }
+      }
+    },
       components:{
           Badge,
+      },
+      mounted(){
+        console.log(typeof ((this.orderItem.judgeStars)+0) )
+      },
+      methods:{
+        jump(){
+          this.$emit('againChart',{orderItem:this.orderItem})
+        }
       }
+
   };
 
 </script>

@@ -29,22 +29,21 @@
   margin-left: 0.75rem;
   position: relative;
   padding: 0.625rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .container > .search-content > .search-item > .off-list > .off-name {
-  width: 3.75rem;
-  height: 1.5rem;
+  padding: 5px 15px;
   border-radius: 4px;
   background-color: #E6E6E6;
   text-align: center;
   line-height: 1.5rem;
   color: #666;
-  margin-bottom: 0.625rem;
 }
 .container > .search-content > .search-item > .off-list > .off-inner {
   color: #999;
 }
 .container > .search-content > .search-item > .off-list > .icon-box {
-  position: absolute;
   right: 0;
-  top: 40%;
 }

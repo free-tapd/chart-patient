@@ -1,31 +1,57 @@
 <template>
   <div class="vg">
     <ul class="patient-list">
-      <li @click="changeJump('/addPatient')">
-        <i>谢</i>
+      <li @click="changeJump('/editorPatient',{sickerMessage:JSON.stringify(v) })" v-for="(v,i) in patientArr " :key="i">
+        <i :style="{backgroundColor:v.bgColor}">{{v.patientName.substr(0,1)}}</i>
         <div class="patient-text">
-          <p class="patient-name">张素贞 <span>(默认)</span></p>
-          <p class="patient-age">28岁
-            <span class="iconfont icon-nv" style="color:#E66DC5;"></span>
-            <span class="iconfont icon-nan" style="color:#329DE5;"></span>
+          <p class="patient-name">{{v.patientName}} <span v-if="false">(默认)</span></p>
+          <p class="patient-age">{{v.patientAge}}岁
+            <!-- 0：未知；1：男；2：女； -->
+            <span class="iconfont icon-nv" style="color:#E66DC5;" v-if="v.patientSex==1"></span>
+            <span class="iconfont icon-nan" style="color:#329DE5;" v-if="v.patientSex==2"></span>
 
           </p>
         </div>
       </li>
     </ul>
-    <p class="warm-text"> 你还可以添加<span style="color:#2D9FF1;">6</span> 位就诊人</p>
-    <div class="add-btn-box">
-        <p>+添加就诊人</p>
+    <p class="warm-text"> 你还可以添加<span style="color:#2D9FF1;">{{5-patientArr.length}}</span> 位就诊人</p>
+    <div class="add-btn-box" >
+        <p :class="{'no-click':patientArr.length==5}" @click="changeJump('/addPatient')">+添加就诊人</p>
     </div>
   </div>
 </template>
 <script>
+import {getAge} from "@/utils/age"
   export default {
-
+    data(){
+      return {patientArr:[]}
+    },
+    mounted(){
+      this.getPatientList()
+    },
+    methods:{
+      // 获取就诊人
+      getPatientList(){
+        this.$get('Patient/getPatientList').then(res=>{
+          if(res.code==0){
+            
+            res.data.forEach(v=>{
+              this.$set(v,'bgColor', `#${Math.floor(Math.random() * 16777215).toString(16)}`)
+              this.$set(v,'patientAge',getAge(v.idCard));
+            })
+            this.patientArr=res.data;
+          }
+        })
+      }
+    }
   }
 
 </script>
 <style lang="less" scoped>
+    .no-click{
+    pointer-events: none;
+    background-color: #CCCCCC!important;
+  }
   .patient-list {
     margin-top: 22px;
 
@@ -38,6 +64,7 @@
       margin: 0 auto;
       display: flex;
       align-items: center;
+      margin-bottom: 22px;
 
       >i {
         display: block;

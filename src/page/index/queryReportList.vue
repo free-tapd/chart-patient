@@ -1,24 +1,9 @@
 <template>
   <div class="vg">
-    <div class="bg-top"></div>
-    <!-- <div class="bg-bottom">
-      <div class="bg-inner-box">
-        
-        <Xtab :tabArr="tabArr" :defaultColor="'#ccc'" :activeColor="'#fff'" :barColor="'#fff'" @getItem="getItem" />
-      </div>
-
-    </div> -->
     <div class="content">
       <!-- 引入组件 -->
-      <sickCard :isBtn="false"/>
-
-
-
       <div class="visit-box">
-        <div class="date-list flex-r">
-          <span>2017/07/21-2017/07/30</span> 
-          <p class="funbg icon-calan"></p>
-        </div>
+
         <div class="visit-list">
 
           <div class="flex-c visit-item vux-1px-b" v-for="v in 10" :key="v" @click="changeJump('/payRecordDetail',{})">
@@ -26,13 +11,14 @@
             <div class="flex-r add-list">
               <div class="offices-name flex-c">
                 <div class="off-list">
+                  <i class="funbg icon-nprococal"></i>
                   <p>乙肝五项定量丙型肝炎抗体测定</p>
 
                 </div>
               </div>
               <div class="pay-money flex-c">
                 <div class="money-num">
-                  2017/07/11  07:59:12 </div>
+                  2018-06-05 </div>
               </div>
             </div>
             <!-- <span class="off-date"> 收据号：12345678910234567891010</span> -->
@@ -41,24 +27,21 @@
 
         </div>
       </div>
-      <!-- 注意事项 -->
-      <!-- <div class="waring flex-c" v-show="isPay">
-        <span class="waring-text"></span> <span>注意事项</span>
-        <span class="waring-text"></span> <span>1、暂不支持医保支付
-        </span>
-        <span class="waring-text"></span> <span>2、请在 下午16：00前完成支付</span>
-        <span class="waring-text"></span> <span>3、暂不支持在线缴纳检查费用
-        </span>
-      </div> -->
     </div>
-    <!-- <div class="pay-btn-box vux-1px-t flex-r" v-show="isPay">
-      <p class="pay-text"> <span>共:</span>
-        
-        <span>￥562.20</span></p>
-      <div class="pay-btn">
-          立即支付
+    <div class="btn-bg vux-1px-t">
+      <div class="cancle-btn">
+        <i class="funbg icon-nprococal"></i>
+        <span>全选</span>
       </div>
-    </div> -->
+   
+      <!--  -->
+      <div class="add-btn" v-if="false">
+        保存
+      </div>
+       <div class="add-btn cancle" style="background-color:#FF5345;">
+        删除
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -109,78 +92,15 @@
   }
 
 </script>
-<style lang="css">
-  .vux-tab {
-    background-color: transparent !important;
-  }
 
-</style>
 <style lang="less" scoped>
   @color: #42a0e2;
-    .icon-calan{
-      width: 35px;
-      height: 35px;
-      background-image: url('../../assets/images/calan.jpg')
-    }
-  .icons {
-    width: 54px;
-    height: 54px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 24px;
-  }
-
-  .bg-top {
-    height: 115px;
-    //   position: relative;
-    background-color: @color;
-  }
-
-  .bg-bottom {
-    background-color: @color;
-
-    >.bg-inner-box {
-      // padding-bottom: 30px;
-    }
-  }
-
-  .pay-btn-box {
-    justify-content: space-between;
-    align-items: center;
-    height: 119px;
-    background-color: #fff;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 0 19px;
-
-    >.pay-text {
-      font-size: 34px;
-
-      >span:last-child {
-        color: #FF8400;
-        margin-left: 20px;
-      }
-    }
-
-    >.pay-btn {
-      width: 302px;
-      height: 88px;
-      font-size: 34px;
-      color: #fff;
-      background-color: @color;
-      line-height: 88px;
-      text-align: center;
-      border-radius: 40px;
-    }
-  }
 
   .content {
+    padding-bottom: 120px;
+
     >.switch-start-end {
-      width: 95%;
+
       margin: 0 auto;
       box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.15);
       margin-top: 17px;
@@ -229,7 +149,6 @@
     >.waring {
       // align-items: center;
       // margin: 0 auto;
-      width: 95%;
       padding: 30px;
       margin-top: 35px;
       font-size: 24px;
@@ -244,28 +163,25 @@
     }
 
     >.visit-box {
-      background-color: #fff;
+      // background-color: #fff;
       margin: 0 auto;
-      margin-top: 15px;
 
       >.date-list {
         justify-content: space-between;
         padding: 15px;
         color: #999;
         font-size: 24px;
-        // width: 95%;
 
       }
 
       >.visit-list {
-        // box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.15);
-        // padding: 30px;
-        width: 95%;
+        margin-top: 20px;
         margin: 0 auto;
         justify-content: space-between;
         align-items: center;
         font-size: 30px;
         color: #000;
+
 
         & .off-date {
           font-size: 24px;
@@ -280,12 +196,24 @@
         }
 
         & .offices-name {
-          flex: 2;
+          flex: 3;
 
           >.off-list {
+            display: flex;
+            align-items: center;
+
+            >i {
+              width: 33px;
+              height: 33px;
+              display: block;
+              margin-right: 27px;
+            }
+
             >p {
               font-size: 30px;
               color: #333;
+              font-weight: bold;
+
             }
 
             font-size: 30px;
@@ -329,7 +257,9 @@
 
         &>.visit-item {
           //   align-items: center;
-          padding: 26px 0;
+          padding: 40px 20px;
+          background-color: #fff;
+          margin-bottom: 11px;
 
           >.is-checked {
             display: block;
@@ -338,15 +268,72 @@
             border-radius: 50%;
             background-color: @color;
             margin-right: 15px;
+
           }
 
         }
 
-        &>.visit-item:not(:first-child) {}
+
       }
     }
 
 
+  }
+
+  .btn-bg {
+    height: 120px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 1px 0px 0px rgba(230, 230, 230, 1);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cancle-btn {
+    display: flex;
+    align-items: center;
+
+    >i {
+      width: 33px;
+      height: 33px;
+      display: block;
+      margin-right: 27px;
+      margin-left: 30px;
+    }
+
+    >span {
+      font-size: 30px;
+      font-weight: bold;
+      color: rgba(51, 51, 51, 1);
+      line-height: 50px;
+    }
+  }
+
+  .add-btn {
+    margin-right: 22px;
+    width: 520px;
+    height: 88px;
+    background: #2D9FF1;
+    border-radius: 10px;
+    font-size: 32px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 1);
+    line-height: 88px;
+    text-align: center;
+
+
+  }
+
+  .icon-prococal {
+    background-image: url("../../assets/images/jzr_ico_chose_set@2x.png");
+  }
+
+  .icon-nprococal {
+    background-image: url("../../assets/images/jzr_ico_chose_nor@2x.png");
   }
 
 </style>

@@ -1,9 +1,13 @@
 <template>
-  <div class="docutor-list">
+  <div class="docutor-list" @click="jump(doctorItem)">
     <!-- 医生列表   页面 -->
     <div class="docutor-message flex-r vux-1px-b ">
       <div class="img-box">
-        <img src="../assets/images/inquiry/head.jpg" alt>
+        <figure>
+          <img src="../assets/images/default-doctor.png" alt="" class="img-user" width="100%" v-if="!doctorItem.doctorImg"/>
+           <img :src="doctorItem.doctorImg" alt class="img-user" width="100%" v-else/>
+        </figure>
+       
         <p class="is-online-box"> <span>在线</span> </p>
       </div>
       <div class="flex-c profession ">
@@ -12,16 +16,16 @@
           <!-- 医生信息 -->
           <div class="docutor-name">
             <div class="docutor-skill">
-              <p class="docutor-title">李素珍</p>
-              <span class="docutor-grade">主任医师</span>
-              <span class="docutor-partment">消化科</span>
+              <p class="docutor-title">{{doctorItem.doctorName}}</p>
+              <span class="docutor-grade">{{doctorItem.titleName}}</span>
+              <span class="docutor-partment">{{doctorItem.sectionName}}</span>
             </div>
             <!-- 所属医院 -->
-            <p class="hospital-name">天津大学总医院</p>
+            <p class="hospital-name">{{doctorItem.hospitalName}}</p>
             <div class="score">
               <span class="icon-star-pink funbg"></span>
-              <span>5.0</span>
-              <span>40次咨询</span>
+              <span>{{doctorItem.judgeStars}}</span>
+              <span>{{doctorItem.orderCount}}次咨询</span>
             </div>
           </div>
           <!-- 关注 -->
@@ -33,18 +37,20 @@
         </div>
         <!-- seconed -->
         <!-- 一生的业务信息 -->
-        <div class="follow-msg flex-r ellipsis"><span style="color:#808080;">擅长:</span> Edgewise矫正技术、Tip—Edge矫治技术、MBT...
+        <div class="follow-msg flex-r ellipsis"><span style="color:#808080;">擅长:</span> {{doctorItem.goodAt}}
         </div>
         <div class="server-price flex-r vux-1px-t">
-          <p class="flex-r">
-            <i class="funbg"></i>
-            <span>￥30</span>
+          <p class="flex-r" v-for="(fun,index) in doctorItem.doctorFunList" :key="index" v-if="fun.hidden!=0">
+            <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOff})`}" v-if="!(new Number(fun.status))"></i>
+            <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOn})`}" v-else></i>
+            <span v-if="(new Number(fun.status))">￥{{fun.presentPrice}}</span>
+            <span v-else style="color:#999">暂无开通</span>
           </p>
-          <p class="flex-r">
+          <!-- <p class="flex-r">
             <i class="funbg icon-video"></i>
             <span>￥60</span>
-          </p>
-          <div class="zixun-btn">
+          </p> -->
+          <div class="zixun-btn" @click.stop="goChart">
             立即咨询
           </div>
         </div>
@@ -53,7 +59,24 @@
   </div>
 </template>
 <script>
-  export default {};
+  export default {
+    props:{
+      doctorItem:{
+        type:Object,
+        default(){
+          return {doctorId:1}
+        }
+      }
+    },
+    methods:{
+      jump(item){
+        this.$emit('doctorDetail',item)
+      },
+      goChart(item){
+        this.$emit('goChart',item)
+      },
+    }
+  };
 
 </script>
 <style lang="less" scoped>
@@ -67,12 +90,16 @@
     >.img-box {
       flex: 1;
 
-      >img {
+      >figure {
         display: block;
-        border-radius: 50%;
         width: 80px;
         height: 80px;
         margin-bottom: 18px;
+        >.img-user{
+          border-radius: 50%;
+          width: 100%;
+          height: 100%;
+        }
       }
 
       >.is-online-box {
@@ -108,7 +135,7 @@
 
           >.hospital-name {
             font-size: 24px;
-            transform: scale(22/24);
+            // transform: scale(22/24);
             font-weight: 500;
             color: #333;
           }
@@ -205,9 +232,14 @@
         margin-top: 30px;
         align-items: center;
         font-size: 28px;
+        padding-right: 140px;
         color: #2D9FF1;
+        flex-wrap: wrap;
 
         >p {
+          // margin-bottom: 30px;
+          padding: 15px 0;
+          width: 50%;
           >i {
             width: 38px;
             height: 38px;
@@ -220,7 +252,7 @@
         }
 
         >p:not(:first-child) {
-          margin-left: 50px;
+          // margin-left: 50px;
         }
 
         >.zixun-btn {

@@ -1,13 +1,13 @@
 <template>
   <div class="search vux-1px-b"  @click="focusInput">
-    <div class="no-focus" v-if="!isFocus" >
+    <div class="no-focus" v-show="!isFocus" >
       <span class="funbg icon-search"></span>
       <span class="place-text">搜索科室和医生</span>
     </div>
-    <div class="yes-focus" v-else>
+    <div class="yes-focus" v-show="isFocus">
 
       <div class="input-box">
-        <input type="text" v-model="searchInner" v-focus @click.stop="searchResult" @change="searching"/>
+        <input type="text" :value="value"  @input="searching($event.target.value)" v-focus @click.stop="searchResult" />
         <span class="funbg icon-search"></span>
         <div class="close-btn" @click.stop="emptyContent">
            <span class="iconfont icon-baseline-close-px"></span>
@@ -25,18 +25,34 @@
         type: Boolean,
         default: false
       },
+      value:{
+        type:String,
+        default:""
+      }
       
 
     },
     data(){
       return{
-        searchInner:""
+        searchInner:"",
+        searchValue:""
       }
     },
     directives:{
       focus:{
         inserted(el){
           el.focus()
+        }
+      }
+    },
+    mounted(){
+      console.log(this.value)
+    },
+    watch:{
+      searchValue(newValue){
+        if(newValue){
+          // console.log(newValue);
+          //  this.$emit('PZsearch',newValue);
         }
       }
     },
@@ -48,13 +64,26 @@
         console.log('click')
       },
       emptyContent(){
-        this.searchInner=""
+        this.searchValue=""
       },
       cancleHandle(){
         this.$emit('cancleHandle',this.isFocus)
       },
-      searching(){
-        console.log('change')
+      searching1(){
+        console.log(this.searchValue)
+        // this.$emit('pzSearch',this.searchValue);
+        console.log('change');
+        
+        this.$emit('input', '222222');
+        
+      }, 
+      searching(val){
+        // console.log('change')
+        // console.log(event.target.value)
+        // this.searchValue=event.target.value;
+        // console.log(this.searchValue)
+        this.$emit('input',val);
+        // this.$emit('input', '222222');
       },
       jump(){
         this.changeJump('/indexSearch')

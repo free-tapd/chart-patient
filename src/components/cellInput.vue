@@ -14,7 +14,7 @@
         <span class="iconfont icon-right" style="font-size:16px;margin-left:6px;" v-if="islink"></span>
       </div>
       <div class="input-type" v-if="cell.type==1">
-        <input type="text" :placeholder="cell.placeholder" :class="{'isRight':isRight}" />
+        <input type="text" :placeholder="cell.placeholder" :class="{'isRight':isRight}"  :value="value" @input="onInput($event.target.value)"/>
       </div>
       <div class="input-type" v-if="cell.type==2">
         <input type="number" :placeholder="cell.placeholder" :class="{'isRight':isRight}" />
@@ -38,11 +38,20 @@
         cell: {}
       };
     },
+    model:{
+          prop: "value", //绑定的值，通过父组件传递
+          event: "onInput" //自定义时间名
+    },
+
     props: {
       // title:{
       //     type:String,
       //     default:''
       // },
+      value:{
+        type:String,
+        default:""
+      },
       propValue: {
         type: String,
         default: ""
@@ -81,7 +90,12 @@
       this.cell = this.$attrs;
     },
     mounted() {},
-    methods: {}
+    methods: {
+      onInput(val){
+        
+        this.$emit('onInput',val)
+      }
+    }
   };
 
 </script>

@@ -1,24 +1,35 @@
 <template>
   <div class="vg">
-    
     <div class="search-inner" ref="searchs">
-      <searchBox  @focusHandler="focusHandler"  />
+      <searchBox @focusHandler="focusHandler" />
     </div>
     <!-- 广告图 -->
     <div class="advert-box">
-      <img src="../../assets/images/inquiry/f_logo.png" alt="">
+      <!-- <img src="../../assets/images/inquiry/f_logo.png" alt=""> -->
+      <div class="swiper">
+        <!-- <swiper :list="swiperList"  aspect-ratio dots-position="center" :show-dots="false" :show-desc-mask="false"></swiper> -->
+        <swiper :options="swiperOption">
+          <swiper-slide v-for="(v,i) in swiperList" :key="i"><img :src="v.img" :alt="v.name"
+              style="max-width:100%; display:block;height:100%;"></swiper-slide>
+
+          <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
+      </div>
     </div>
     <!-- 咨询记录，我的医生 -->
     <ul class="infor-list">
-      <li class="vux-1px-r">
-        <img src="../../assets/images/inquiry/record.png" alt="">
+      <li class="vux-1px-r" @click="changeJump('/consultList')">
+        <!-- <img src="../../assets/images/inquiry/record.png" alt=""> -->
+        <!--  -->
+        <span class="ios-img  funbg " ></span>
         <div class="my-text">
           <p>咨询记录</p>
           <span>点击查看</span>
         </div>
       </li>
-      <li>
-        <img src="../../assets/images/inquiry/doctor.png" alt="">
+      <li @click="changeJump('/myDoctor')">
+        <!-- <img src="../../assets/images/inquiry/doctor.png" alt=""> -->
+        <span class="ios-img ios-img1 funbg" ></span>
         <div class="my-text">
           <p>我的医生</p>
           <span>点击查看</span>
@@ -29,25 +40,29 @@
     <div class="hot-sections">
       <div class="title-box vux-1px-b">
         <span>热门科室</span>
-        <p>更多 <span class="iconfont icon-right"></span> </p>
+        <p @click.stop="changeJump('/indexSearch',{platformName:platformName,type:1})">更多 <span
+            class="iconfont icon-right"></span> </p>
 
       </div>
       <ul class="section-list">
-        <li v-for="v in 8" :key="v">
-          <img src="../../assets/images/inquiry/head.jpg" alt="">
-          <p> 呼吸内科</p>
-          <span>1位医生在线</span>
+        <li v-for="(v,i) in sectionArr" :key="i" @click.stop="jumpSection(v)">
+          <!-- <img :src="v.sectionIcon" alt=""> -->
+          <div class="ios-img funbg" :style="{backgroundImage:'url('+v.sectionIcon+')'}"> </div>
+          <p class="ellipsis"> {{v.sectionName}}</p>
+          <span>{{v.doctorOnline}}位医生在线</span>
         </li>
       </ul>
     </div>
     <!-- 热门医生 -->
-       <div class="hot-sections">
+    <div class="hot-sections">
       <div class="title-box vux-1px-b">
         <span>热门医生</span>
-        <p @click.stop="changeJump('/indexSearch',{isFocus:0})">更多 <span class="iconfont icon-right"></span> </p>
+        <p @click.stop="changeJump('/indexSearch',{platformName:platformName,type:2})">更多 <span
+            class="iconfont icon-right"></span> </p>
 
       </div>
-    <docutorItem v-for="v in 5" :key="v" />
+      <docutorItem v-for="(v,i) in doctorList" :key="i" :doctorItem="v" @doctorDetail="doctorDetail"
+        @goChart="goChart" />
     </div>
 
     <Xfooter />
@@ -58,109 +73,76 @@
   import searchBox from "@/components/searchBox";
   import Xfooter from "@/components/footer"
   import {
+    mapState,
+    mapMutations
+  } from "vuex";
+  import 'swiper/dist/css/swiper.css' //在全局没引入，这里记得要！
+  import {
+    swiper,
+    swiperSlide
+  } from 'vue-awesome-swiper'
+
+  import {
     Flexbox,
     FlexboxItem,
-    Sticky
+    Sticky,
+    Swiper
   } from "vux";
   export default {
     data() {
       return {
-        tabArr: [{
-            id: 1,
-            title: "综合排序"
-          },
-          {
-            id: 2,
-            title: "全部科室"
-          },
-          {
-            id: 3,
-            title: "全部医院"
-          }
-        ],
-        chooseArr: [{
-            id: 1,
-            title: "按咨询量",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "从高到底",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "从低到高",
-                  isClick: false
-                }
-              ]
-            }
-          },
-          {
-            id: 2,
-            title: "按好评量",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "从高到底",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "从低到高",
-                  isClick: false
-                }
-              ]
-            }
-          },
-          {
-            id: 3,
-            title: "医生状态",
-            choose: {
-              cur: 0,
-              chooseList: [{
-                  chooseTitle: "在线医生",
-                  isClick: false
-                },
-                {
-                  chooseTitle: "全部医生",
-                  isClick: false
-                }
-              ]
-            }
-          }
-        ],
+        searchValue: "dsaf fsd ",
         cur: 0,
         cur1: 0,
         cur2: 0,
         activeId: -1,
-        offset:0
+        offset: 0,
+        sectionArr: [],
+        doctorList: [],
+        swiperList: [],
+        swiperOption: {
+          autoplay: true,
+        }
       };
+    },
+    computed: {
+      ...mapState(['platformName', "hospitalCode", ])
     },
     components: {
       docutorItem,
       Flexbox,
       FlexboxItem,
       searchBox,
-      Xfooter,Sticky
+      Xfooter,
+      Sticky,
+      swiper,
+      swiperSlide
     },
     mounted() {
-      this.$nextTick(()=>{
-         console.log(document.getElementsByTagName("body"));
-      // document.getElementsByTagName("body")[0].style.overflow = "hidden";
-      console.log(this.$refs.searchs.offsetHeight)
-      this.offset=this.$refs.searchs.offsetHeight;
-      document.querySelector('.vg').style.paddingTop=this.offset+"px";
-      } )
-     
-     
-    
+      this.$nextTick(() => {
+        console.log(document.getElementsByTagName("body"));
+        // document.getElementsByTagName("body")[0].style.overflow = "hidden";
+        console.log(this.$refs.searchs.offsetHeight)
+        this.offset = this.$refs.searchs.offsetHeight;
+        document.querySelector('.vg').style.paddingTop = this.offset + "px";
+        this.getIntroDoctorList();
+        this.getIntroSection();
+        this.getSwiperList();
+        this.isFooter = new Number(this.$route.query.isFooter)
+      })
+
+
+
     },
     methods: {
+      ...mapMutations(['saveTab']),
       allHandler(v) {
         console.log(v);
-         
+
         this.activeId = v.id;
         if (this.cur == v.id) {
           this.cur = 0;
-           
+
           document.getElementsByTagName("body")[0].style.overflow = "";
         } else {
           this.cur = v.id;
@@ -172,9 +154,82 @@
       chooseTag(item, j) {
         item.choose.cur = j
       },
-      focusHandler(msg){
+      focusHandler(msg) {
         this.changeJump('/indexSearch1')
+      },
+      // 测试接口
+
+      // 获取推荐医生列表
+      getIntroDoctorList() {
+        this.$get('WzPlatformDoctor/getHotDoctorList', {
+          platformAccount: this.platformName
+        }).then(res => {
+          // console.log(res)
+          if (res.code == 0) {
+            this.doctorList = res.data;
+          }
+        })
+      },
+      //跳转 医生详情
+      doctorDetail(item) {
+        this.changeJump('/doctorHome', {
+          doctorId: item.doctorId
+        })
+      },
+      // 获取推荐科室
+      getIntroSection() {
+        this.$get('WzPlatformSections/getHotSectionList', {
+          platformAccount: this.platformName
+        }).then(res => {
+          if (res.code == 0) {
+            this.sectionArr = res.data;
+          }
+        })
+      },
+      getSwiperList() {
+        this.$post('SlidePic/getSlideList', {
+          platformAccount: this.platformName,
+          hospitalCode: this.hospitalCode
+        }).then(res => {
+          // console.log(res)
+          if (res.code == 0) {
+            const urlList = res.data.map((item, index) => ({
+              url: "",
+              img: item.slidePic,
+              // fallbackImg: item.fallbackImg,
+              title: item.slideName
+            }))
+            this.swiperList = urlList;
+          }
+        })
+      },
+      goChart(item) {
+        this.changeJump('/chartList', {
+          doctorId: item.doctorId
+        })
+      },
+      // 科室条转
+      jumpSection(item) {
+        this.changeJump('/indexSearch', {
+          platformName: this.platformName,
+          type: 2,
+          sectionId: item.sectionId,
+          level: item.level
+        });
+        if (item.level == '1') {
+          this.saveTab({
+            firstSectionName: item.sectionName,
+            firstSectionId: item.sectionId
+          })
+        } else {
+          this.saveTab({
+            secondSectionName: item.sectionName,
+            secondSectionId: item.sectionId
+          })
+        }
+
       }
+
     }
   };
 
@@ -187,17 +242,24 @@
   .vg {
     padding-bottom: 110px
   }
-.search-inner{
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-.search-inner::after{
-  display: block;
-  content: "";
-}
+
+  /deep/.swiper-container {
+    height: 100%;
+  }
+
+  .search-inner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+
+  .search-inner::after {
+    display: block;
+    content: "";
+  }
+
   .active-icon {
     // translate: 50% 50%;
     background-image: url("../../assets/images/inquiry/blur_array.png") !important;
@@ -213,12 +275,14 @@
   .advert-box {
     background-color: #fff;
 
-    >img {
+
+    >.swiper {
       width: 690px;
       height: 320px;
       border-radius: 20px;
       display: block;
       margin: 0 auto;
+      overflow: hidden;
     }
 
   }
@@ -239,13 +303,17 @@
       display: flex;
       align-items: center;
 
-      >img {
+      >.ios-img {
         margin-right: 30px;
         width: 80px;
         height: 80px;
         display: block;
-        border-radius: 50%;
+        background-image:url('../../assets/images/inquiry/record.png');
+        // border-radius: 50%;
 
+      }
+      >.ios-img1{
+        background-image:url('../../assets/images/inquiry/doctor.png')
       }
 
       >.my-text {
@@ -291,7 +359,7 @@
         align-items: center;
         padding: 15px 0;
 
-        >img {
+        >.ios-img {
           width: 100px;
           height: 100px;
           display: block;
@@ -339,7 +407,7 @@
 
   .pannel-search-hospital {
     display: flex;
-    
+
     // align-items: baseline;
 
     height: 549px;
@@ -349,6 +417,7 @@
     left: 0;
     right: 0;
     z-index: 10000;
+
     >.pannel-left {
       overflow: scroll;
       background: rgba(248, 248, 248, 1);

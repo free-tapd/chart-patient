@@ -4,16 +4,23 @@ import Vue from 'vue';
 import FastClick from 'fastclick';
 import App from './App';
 import router from './router';
+import store from "./store";
 import './styles/base.less'
-import { Flexbox, FlexboxItem,ConfirmPlugin } from 'vux';
-Vue.use(ConfirmPlugin)
+import { Flexbox, FlexboxItem,ConfirmPlugin,ToastPlugin ,LoadingPlugin } from 'vux';
+Vue.use(ConfirmPlugin);
+Vue.use(ToastPlugin);
+Vue.use(LoadingPlugin);
 FastClick.attach(document.body);
 import VConsole from 'vconsole'
+import {post,get} from "./utils/http";
 const vconsole=new VConsole();
 Vue.config.productionTip = false;
-
+// 引入jssdk
+import { WechatPlugin } from 'vux'
+Vue.use(WechatPlugin)
 Vue.component('flexbox', Flexbox);
 Vue.component('flexbox-item', FlexboxItem);
+
 Vue.prototype.changeJump=function(path,query={}){
   this.$router.push({
     path,
@@ -24,10 +31,13 @@ Vue.filter("formatMoney", function(value) {   //全局方法 Vue.filter() 注册
   return "￥"+value;
 });
 
+Vue.prototype.$post=post;
+Vue.prototype.$get=get;
 /* eslint-disable no-new */
 new Vue({
   el: '#app-box',
   router,
+  store,
   components: { App },
   template: '<App/>'
 });

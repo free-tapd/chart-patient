@@ -4,6 +4,7 @@ import addSicker from '@/page/inquiry/addSicker';
 import addSickerMessage from '@/page/inquiry/addSickerMessage';
 import videoSicker from '@/page/inquiry/videoSicker';
 import systemMessage from '@/page/inquiry/systemMessage';
+import chartList from '@/page/inquiry/chartList';
 
 function loadView(view) {
     return () => import(/* webpackChunkName: "view-[request]" */ `@/page/inquiry/${view}`)
@@ -46,6 +47,12 @@ let router=[
         component:systemMessage,
         meta:{
             title:"系统消息"
+        }
+    },{
+        path:"/chartList",
+        component:chartList,
+        meta:{
+            title:"聊天服务"
         }
     }
 ]

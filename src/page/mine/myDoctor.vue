@@ -1,30 +1,57 @@
 <template>
   <div class="my-doctor">
     <ul class="doctor-box">
-      <li class="doctor-item" v-for="v in 10 " :key="v" @click="changeJump('/doctorHome',{})">
+      <li class="doctor-item" v-for="(v,i) in doctorArr " :key="i" @click="changeJump('/doctorHome',{doctorId:v.doctorId})">
         <div class="img-box">
-          <img src="../../assets/images/inquiry/my_doctor.png" alt="">
-          <div class="is-online">
-            <p>离线 </p>
+          <img :src="v.doctorImg" alt="">
+          <div class="is-online" :class="{'active-online':v.online=='true'}">
+            <p>{{v.online=='true'?"在线":"离线"}} </p>
           </div>
         </div>
         <div class="doctor-message vux-1px-b">
           <div class="doctor-name">
-            <h5>赵素芬</h5> <span>妇科 主任医师</span>
+            <h5>{{v.doctorName}}</h5> <span>{{v.sectionName}}&nbsp; {{v.titleName}}</span>
           </div>
-          <p class="doctor-address">河北医科大学第二医院</p>
+          <p class="doctor-address">{{v.hospitalName}}</p>
         </div>
       </li>
     </ul>
+     <div class="no-doctor" v-if="doctorArr.length==0">
+          <span class="bg-image"></span>
+          <span class="no-text"> 暂无数据</span>
+        </div>
   </div>
 </template>
 <script>
   export default {
-
+    data(){
+      return {
+        doctorArr:[]
+      }
+    },
+    computed:{
+      userId(){
+        return this.$store.state.userId
+      }
+    },
+    mounted(){
+      this.getMyDoctor()
+    },
+    methods:{
+      // 我的医生列表
+      getMyDoctor(){
+        this.$post('doctor/getFollowDoctorByUserId',{userId:this.userId}).then(res=>{
+          if(res.code==0){
+            this.doctorArr=res.data;
+          }
+        })
+      }
+    }
   }
 
 </script>
 <style lang="less" scoped>
+
 active-online{
      background-color: #5CB3F1!important;
 }
