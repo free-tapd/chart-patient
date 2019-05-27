@@ -52,7 +52,7 @@
           this.tabIndex=i
           this.selected=i
           if(this.selected==0){
-            this.changeJump('/')
+            this.changeJump('/index')
           }else if(this.selected==1){
             this.changeJump('/inquiry');
           }else{

@@ -8,7 +8,7 @@
            <img :src="doctorItem.doctorImg" alt class="img-user" width="100%" v-else/>
         </figure>
        
-        <p class="is-online-box"> <span>在线</span> </p>
+        <p class="is-online-box" :style="{backgroundColor:doctorItem.online=='1'?'#5cb3f1':'#c2c2c2'}"> <span>{{doctorItem.online=='1'?"在线":"离线"}}</span> </p>
       </div>
       <div class="flex-c profession ">
         <!-- first -->

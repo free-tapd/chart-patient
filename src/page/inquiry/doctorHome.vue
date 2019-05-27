@@ -37,7 +37,7 @@
               </p>
             </div>
             <!-- 关注 -->
-            <div class="follow-btn " @click="isCode=!isCode"> <span class="funbg"></span></div>
+            <div class="follow-btn " @click="isCode=!isCode" v-if="false"> <span class="funbg"></span></div>
           </div>
           <!-- seconed -->
 
@@ -617,11 +617,11 @@
           // if(item.status=='0'){
           //    this.$vux.toast.text('该功能暂未开通',"middle")
           // }
-        if(new Number(item.status) && this.doctorMessage.online=="true") {
+        // if(new Number(item.status) && this.doctorMessage.online=="true") {
           this.changeJump('/addSicker',{funId:item.id,doctorId:this.doctorMessage.doctorId})
-        }else{
-           this.$vux.toast.text('该功能暂未开通',"middle")
-        }
+        // }else{
+        //    this.$vux.toast.text('该功能暂未开通',"middle")
+        // }
       }
 
     }

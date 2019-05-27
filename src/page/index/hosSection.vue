@@ -1,7 +1,8 @@
 <template>
     <div class="c">
         <!-- 门诊 -->
-        <button @click="changeJump('/index',{pf:'jkhb',ch:'wechat_service_number',exp:'1',isFooter:0})"> go index</button>
+        <!-- a1a9dc002e964b1fbc226bfd161b1d90 -->
+        <button @click="changeJump('/index',{pf:'jkhb',ch:'wechat_service_number',exp:'1',isFooter:0,token:'a1a9dc002e964b1fbc226bfd161b1d90'})"> go index</button>
     </div>
 </template>
 <script>

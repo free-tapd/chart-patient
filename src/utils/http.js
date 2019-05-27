@@ -57,15 +57,16 @@ axios.interceptors.request.use(
     if (store.state.token) {
       config.headers.token = ` ${store.state.token}`
     } 
-    let {pf,ch,exp,isFooter}=router.app._route.query;
+    let {pf,ch,exp,isFooter,token}=router.app._route.query;
     if(pf&&ch&&exp){
       store.commit('saveHeader',{pf,ch,exp});
       store.commit('savePlatform',pf);
 
     }
-    // if(isFooter){
-
-    // }
+      if(token){
+        store.commit('saveToken',token);
+        config.headers.exp=store.state.token;
+      }
     if(store.state.headerMessage.pf||store.state.headerMessage.ch||store.state.headerMessage.exp){
       config.headers.pf=store.state.headerMessage.pf;
       config.headers.ch=store.state.headerMessage.ch;

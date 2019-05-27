@@ -139,19 +139,22 @@
 
     <!--mescroll滚动区域的基本结构-->
     <!-- <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit"> -->
-      <!--内容...-->
-
+    <!--内容...-->
+    <!--滑动区域-->
+    <div ref="mescroll" class="mescroll">
       <!-- chart list  -->
       <!-- 聊天室  -->
-      <div class="chart-box" v-if="serviceId==2">
+      <div class="chart-box" v-show="serviceId==2">
         <ul class="chart">
-          <li class="chart-item" v-for="(v,i) in chartPannelList" :key="i"
+          <!-- <li class="chart-item" v-for="(v,i) in chartPannelList" :key="i" -->
+          <li class="chart-item" v-for="(v,i) in chatRecordList" :key="i"
             v-if="(v.userType==1 ||v.userType==0) && !v.content=='' ">
             <!-- 聊天时间 -->
             <div class="chart-date">
               {{v.createTime}}
             </div>
             <!-- 聊天信息 -->
+            <!-- 1 医生 0 患者 -->
             <div class="chart-line" :class="{'active-recivice':v.userType==1}">
               <img src="../../assets/images/inquiry/head.jpg" alt="" v-if="v.userType==1">
               <img src="http://192.168.1.81:8888/frontpage/images/demo1.jpg" alt="" v-else>
@@ -213,8 +216,8 @@
           <chartInput @goSend="send" />
         </div>
       </div>
-    <!-- </mescroll-vue> -->
-
+      <!-- </mescroll-vue> -->
+    </div>
     <!-- 聊天评价面板 -->
     <div class="cover" v-if="isEvaluate">
       <div class="chart-pannel">
@@ -375,10 +378,11 @@
 <script>
   import {
     Qrcode,
-    dateFormat
+    dateFormat,
+    Previewer 
   } from "vux";
   // 引入mescroll的vue组件
-			import MescrollVue from 'mescroll.js/mescroll.vue'
+  import MescrollVue from 'mescroll.js/mescroll.vue'
   import cellInput from "@/components/cellInput";
   import chartInput from "@/components/chartInput";
   import {
@@ -387,6 +391,9 @@
   import {
     log
   } from 'util';
+  // 引入mescroll.min.js和mescroll.min.css
+  import MeScroll from 'mescroll.js'
+  import 'mescroll.js/mescroll.min.css'
   export default {
     data() {
       return {
@@ -417,6 +424,10 @@
         doctorMessage: [],
         path: 'ws://192.168.0.204:8787/websocket?roomId=123&userId=${patientId}&type=inquiry&token=token&userType=patient',
         socket: "",
+        pageSize: 10,
+        pageNum: 1,
+        chatRecordList: [], //聊天记录
+        firstChatRecordList:[],
         mescroll: null,
         mescrollDown: {
           callBack: this.downCallback,
@@ -439,7 +450,8 @@
       Qrcode,
       cellInput,
       chartInput,
-      MescrollVue
+      MescrollVue,
+      Previewer 
 
     },
     computed: {
@@ -450,27 +462,102 @@
         this.value = `https://vux.li?t=${Math.random()}`
         this.fgColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`
       }, 1000)
-      this.getUserMedia();
+      // this.getUserMedia();
       this.init();
-      // this.queryChartList()
+      // this.queryChartList();
+
+      // 创建MeScroll对象:为避免配置的id和父组件id重复,这里使用ref的方式初始化mescroll
+      this.mescroll = new MeScroll(this.$refs.mescroll, { // 在mounted生命周期初始化mescroll,以确保您配置的dom元素能够被找到.
+        down: {
+          auto: true, // 是否在初始化完毕之后自动执行下拉回调callback; 默认true
+          callback: this.downCallback // 下拉刷新的回调
+        },
+        // up: {
+        //   auto: true, // 是否在初始化时以上拉加载的方式自动加载第一页数据; 默认false
+        //   callback: this.upCallback, // 上拉回调,此处可简写; 相当于 callback: function (page) { upCallback(page); }
+        //   page: {
+        //     num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+        //     size: 10 // 每页数据的数量
+        //   },
+        //   noMoreSize: 5, // 如果列表已无数据,可设置列表的总数量要大于等于5条才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
+        //   toTop: { // 配置回到顶部按钮
+        //     src: './static/mescroll/mescroll-totop.png'
+        //   }
+        // }
+      })
+      this.readyInit()
     },
     methods: {
       // mescroll组件初始化的回调,可获取到mescroll对象
       mescrollInit(mescroll) {
         this.mescroll = mescroll // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
       },
-      downCallback(){
-        console.log('下拉')
-        //联网成功的回调,隐藏下拉刷新的状态;
-					   this.$nextTick(() => {
-			         mescroll.endSuccess();
-			        })
-      },
-      upCallback(mescroll){
-        console.log('上拉');
+      readyInit(){
+        console.log(document.querySelector('.chart-box').offsetHeight);
         
       },
-// chart
+      /* 下拉刷新的回调 */
+      downCallback() {
+        console.log('this.mescroll.version=' + this.mescroll.version);
+        // 联网加载数据
+        let {
+          doctorId,
+          roomId,
+          userType,
+          orderNo
+        } = this.$route.query;
+        let params = {
+          orderNo,
+          orderId: "9",
+          page: this.pageNum,
+          limit: this.pageSize,
+          order: "asc",
+          sidx: "create_time"
+        }
+        this.$get('inquiryContent/getInquiryContentList', params).then(res => {
+          if (res.code == 0) {
+            // console.log(res)
+            let {
+              currPage,
+              totalPage
+            } = res.data;
+            let a = res.data.list;
+            a.forEach(v=>{
+               v.createTime = dateFormat(new Date(v.createTime), 'YYYY-MM-DD HH:mm:ss')
+            })
+            if (totalPage == 1) {
+              this.chatRecordList = a;
+
+            }
+            if(currPage==1){
+              this.firstChatRecordList=a;
+            }
+            if (currPage < totalPage) {
+              this.chatRecordList = [...a,...this.chatRecordList];
+              this.pageNum++;
+
+            }
+            if(currPage==totalPage){
+               this.chatRecordList = [...a,...this.chatRecordList];
+              this.$vux.toast.text('没有更多记录')
+              this.mescroll.lockDownScroll(true)
+            }
+
+
+          }
+
+        }).catch(res => {
+          this.mescroll.endErr()
+        })
+
+        console.log('下拉刷新');
+        this.$nextTick(() => {
+          this.mescroll.endSuccess();
+        })
+
+      },
+
+      // chart
       init() {
         if (typeof (WebSocket) === "undefined") {
           this.$vux.toast.text("您的浏览器不支持socket")
@@ -479,11 +566,13 @@
           let {
             doctorId,
             roomId,
-            userType
+            userType,
+            orderNo
+
           } = this.$route.query;
           this.socket = new WebSocket(
-            `ws://192.168.1.152:8787/websocket?roomId=${roomId}&userId=${this.patientId}&type=inquiry&token=token&userType=${userType}`
-            )
+            `ws://192.168.1.152:8787/websocket?roomId=${orderNo}&userId=${this.patientId}&type=inquiry&token=${this.$store.state.token}&userType=${userType}`
+          )
           // this.socket = new WebSocket(
           //   `ws://192.168.0.204:8787/websocket?roomId=123&userId=${this.patientId}&type=inquiry&token=token&userType=0`
           //   )
@@ -505,11 +594,21 @@
 
         console.log('接受到的消息');
         console.log(msg.data);
+        // this.pageNum=1;
+        // this.downCallback();
 
         let a = JSON.parse(msg.data);
-        if (a.userType != '3') {
-          a.createTime = dateFormat(new Date(a.createTime), 'YYYY-MM-DD HH:mm:ss')
-          this.$store.commit('saveChartList', a)
+        // let a=this.chatRecordList;
+        console.log(a.userType);
+        
+        if (a.userType == '1' || a.userType == '0') {
+          // a.createTime = dateFormat(new Date(a.createTime), 'YYYY-MM-DD HH:mm:ss')
+          // this.$store.commit('saveChartList', a)
+          this.chatRecordList=[...this.chatRecordList,a];
+          console.log('当前的list');
+          
+          console.log(this.chatRecordList);
+          
         }
 
       },
@@ -518,11 +617,12 @@
           doctorId,
           roomId,
           userType,
-          orderNo
+          orderNo,
+          orderId
         } = this.$route.query;
         let params = {
-          orderId: "",
-          roomId,
+          orderId ,
+          roomId: orderNo,
           type: "inquiry",
           orderNo,
           fromUserId: this.patientId,
@@ -541,28 +641,7 @@
       close: function () {
         console.log("socket已经关闭")
       },
-      // 查询聊天记录
-      queryChartList() {
-        let {
-          doctorId,
-          roomId,
-          userType,
-          orderNo
-        } = this.$route.query;
-        let params = {
-          orderNo,
-          orderId: "9",
-          page: "1",
-          limit: "10",
-          order: "asc",
-          sidx: "create_time"
-        }
-        this.$post('inquiryContent/getInquiryContentList', params).then(res => {
-          if (res.code == 0) {
-            console.log(res)
-          }
-        })
-      },
+
 
 
 
@@ -612,13 +691,14 @@
 
 </script>
 <style lang="less" scoped>
- /*通过fixed固定mescroll的高度*/
-			  .mescroll {
-			    position: fixed;
-			    top: 0px;
-			    bottom: 0;
-			    height: auto;
-			  }
+  /*通过fixed固定mescroll的高度*/
+  .mescroll {
+    position: fixed;
+    top: 0px;
+    bottom: 0;
+    height: auto;
+  }
+
   @import url('../../styles/doctorHome.less');
   @w: 656px;
   @h: 782px;

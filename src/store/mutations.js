@@ -23,3 +23,9 @@ export const saveSearchInner=(state,change)=>{
 export const savePicCase=(state,change)=>{
   state.picCase=[...state.picCase,change]
 }
+export const saveToken=(state,change)=>{
+  state.token=change
+}
+export const saveBackUrl=(state,change)=>{
+  state.backurl=change;
+}

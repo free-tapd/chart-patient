@@ -5,7 +5,7 @@
 
         <p class="add-sick-title vux-1px-b">选择就诊人</p>
         <ul class="add-person">
-          <li v-for="(v,i) in patientList" :key="i" :class="{'active-sel':cur==i}">
+          <li v-for="(v,i) in patientList" :key="i" :class="{'active-sel':cur==i}" @click='selPatient(v,i)'>
             <!-- <span ></span> -->
             <span class="patient-name">{{v.patientName}}</span>
           </li>
@@ -162,6 +162,8 @@
   import {
     base64
   } from 'vux'
+import { log } from 'util';
+import { decode } from 'punycode';
   export default {
     data() {
       return {
@@ -172,11 +174,20 @@
         cur: 0,
         patientList: [],
         picUrl: [],
-        maxPicLen: 0
+        maxPicLen: 0,
+        patientMessage:{}
       }
     },
     mounted() {
-      this.getAddSicker()
+      this.getAddSicker();
+      this.$store.commit('saveBackUrl',window.location.href);
+      
+    },
+    beforeRouteEnter(to,from,next){
+      console.log(to);
+      console.log(from);
+      
+      next();
     },
     computed: {
       wordLen() {
@@ -185,6 +196,7 @@
       uploadUrl() {
         return this.$store.state.uploadUrl;
       }
+
     },
     methods: {
       //判断是iOS 韩式android 手机
@@ -203,12 +215,18 @@
         //         div.className = "result"
         //         document.querySelector('.img-list').appendChild(div); //插入dom树
       },
+      selPatient(item,index){
+        this.cur=index;
+        this.patientMessage=item
+      },
       getAddSicker() {
         this.$get('Patient/getPatientList').then(res => {
           if (res.code == 0) {
             console.log(res)
             if (res.code == 0) {
               this.patientList = res.data;
+              // 默认第一个
+              this.patientMessage=this.patientList[0]
             }
           }
         })
@@ -266,123 +284,93 @@
       },
       //上传图片
       uploadImage(event) {
-        // let imgData = {
-        //   accept: 'image/gif, image/jpeg, image/png, image/jpg',
-        // }
-        // let reader = new FileReader();
-        // let img1 = event.target.files[0];
-        // let type = img1.type; //文件的类型，判断是否是图片  
-        // let size = img1.size; //文件的大小，判断图片的大小  
-        // if (imgData.accept.indexOf(type) == -1) {
-        //   alert('请选择我们支持的图片格式！');
-        //   return false;
-        // }
-        // if (size > 3145728) {
-        //   alert('请选择3M以内的图片！');
-        //   return false;
-        // }
+   
         this.readFile(event.target)
-        // reader.onload = function (ev) {
-        //   // base64码
-        //   console.log('读取完成');
+     
+      },
 
-        //   console.log(ev);
-        //   console.log(ev.target.result);
-
-        //   var imgFile = ev.target.result; //或e.target都是一样的
-        //   document.querySelector(".img").src = ev.target.result;
-        // }
-        // // //发起异步读取文件请求，读取结果为data:url的字符串形式，
-        // reader.readAsDataURL(img1);
-
-
-
-
-
-        // console.log(event)
-        // var fileList = event.target.files;
-        // console.log(fileList)
-        // // console.log(img1)
-        // var uri = ''
-        // let form = new FormData();
-        // console.log(form)
-        // form.append('file', img1, img1.name);
-
-        // //!TODO 测试服务器，正式，需要填写正式服务器地址
-        // this.$post(this.uploadUrl, form).then(res => {
-        //   console.log(res)
-        // })
-        // this.$http.post(this.$URL + 'imageUpload', form, {
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data'
-        //   }
-        // }).then((res) => {
-        //   // this.messageDate.push('<img style="width:50px; height:auto;" src='+ res.data.entity+ '>')
-        //   this.socketMethod({
-        //     sourceClientId: this.$route.params.sid,
-        //     targetClientId: this.$route.params.tid,
-        //     msg: `<img style="width:50px; height:auto;" src=${res.data.entity} >`
-        //   })
-
-        // })
+      // 用户登录
+      getLoginUrl(){
+        return  this.$post('userLogin/getLogin')
       },
       payService() {
+        // 假如用户没有登录
+        // 根据token 判断
+        if(!this.$store.state.token){
+           this.getLoginUrl().then(res=>{
+             if(res.code==0){
+               
+                window.location.href=res.data+encodeURIComponent(this.$store.state.backurl+'&token') ;
+                // window.history.pushState(state, state.title, state.url);
+               
+             }
+        })
+        }else{
+
+          let {patientId,idCard,patientPhone,patientName} =this.patientMessage;
         let params = {
           "doctorId": this.$route.query.doctorId,
           "functionId": this.$route.query.funId,
-          "patientId": "123323",
-          "patientIdcard": "130125199402053512",
-          "patientName": "柳悦龙",
-          "patientPhone": "18141926714",
+          "patientId":patientId,
+          "patientIdcard": idCard,
+          "patientName": patientName,
+          "patientPhone": patientPhone,
           "description": this.sickValue,
-          "picUrl": "",
+          "picUrl": this.picUrl.join(','),
           "payType": "WX-H5"
         }
         let _this = this;
         _this.$post('inquiryOrder/payOrder', params).then(res => {
           if (res.code == 0) {
-            // const {
-            //   appId,
-            //   timeStamp,
-            //   nonceStr,
-            //   paySign,
-            //   package_
-            // } = res.data;
+            const {
+              appId,
+              timeStamp,
+              nonceStr,
+              paySign,
+              package_
+            } = res.data;
 
-            // _this.$wechat.config({
-            //   // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-            //   debug: true,
-            //   appId: appId, // 必填，公众号的唯一标识
-            //   timestamp: timeStamp, // 必填，生成签名的时间戳
-            //   nonceStr: nonceStr, // 必填，生成签名的随机串
-            //   signature: paySign, // 必填，签名，
-            //   jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表
-            // });
-            // _this.$wechat.ready(function () {
-            //   _this.$wechat.chooseWXPay({
-            //     // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-            //     timestamp: timeStamp,
-            //     nonceStr: nonceStr, // 支付签名随机串，不长于 32 位
-            //     package: package_, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-            //     signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-            //     paySign: paySign, // 支付签名
-            //     success: function (res) {
-            //       //res返回信息只有errMsg并没有err_msg，都是自己开调试模式，log出来的！都是泪
-            //       // 支付成功后的回调函数
-            //     },
-            //     cancel: function (res) {
-            //       // 支付取消的回调函数
-            //     },
-            //     error: function (res) {
-            //       // 支付失败的回调函数
-            //     }
-            //   });
-            // })
-            let {doctorId}=this.$route.query
-            this.changeJump('/chartList',{doctorId:doctorId,roomId:"123",userType:"0",orderNo:"20190000524"})
+            _this.$wechat.config({
+              // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              debug: true,
+              appId: appId, // 必填，公众号的唯一标识
+              timestamp: timeStamp, // 必填，生成签名的时间戳
+              nonceStr: nonceStr, // 必填，生成签名的随机串
+              signature: paySign, // 必填，签名，
+              jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表
+            });
+            _this.$wechat.ready(function () {
+              _this.$wechat.chooseWXPay({
+                // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                timestamp: timeStamp,
+                nonceStr: nonceStr, // 支付签名随机串，不长于 32 位
+                package: package_, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                paySign: paySign, // 支付签名
+                success: function (res) {
+                  //res返回信息只有errMsg并没有err_msg，都是自己开调试模式，log出来的！都是泪
+                  // 支付成功后的回调函数
+                  let {doctorId}=this.$route.query
+                  this.changeJump('/chartList',{doctorId:doctorId,roomId:"20190000524",userType:"0",orderNo:"20190000524",orderId:"9"})
+                },
+                cancel: function (res) {
+                  // 支付取消的回调函数
+                },
+                error: function (res) {
+                  // 支付失败的回调函数
+                }
+              });
+            })
+
+           
           }
-        })
 
+
+        })
+                let {doctorId}=this.$route.query
+                  this.changeJump('/chartList',{doctorId:doctorId,roomId:"20190000524",userType:"0",orderNo:"20190000524",orderId:"9"})
+      }
+ 
       }
 
     }

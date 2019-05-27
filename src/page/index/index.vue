@@ -29,7 +29,9 @@
       </li>
       <li @click="changeJump('/myDoctor')">
         <!-- <img src="../../assets/images/inquiry/doctor.png" alt=""> -->
+
         <span class="ios-img ios-img1 funbg" ></span>
+        <!-- <span class="ios-img ios-img1 funbg" ></span> -->
         <div class="my-text">
           <p>我的医生</p>
           <span>点击查看</span>
@@ -47,7 +49,8 @@
       <ul class="section-list">
         <li v-for="(v,i) in sectionArr" :key="i" @click.stop="jumpSection(v)">
           <!-- <img :src="v.sectionIcon" alt=""> -->
-          <div class="ios-img funbg" :style="{backgroundImage:'url('+v.sectionIcon+')'}"> </div>
+          <div class="ios-img funbg" :style="{backgroundImage:'url('+v.sectionIcon+')'}" v-if="v.sectionIcon && v.sectionIcon!='undefined'"> </div>
+          <div class="ios-img funbg no-section"  v-else> </div>
           <p class="ellipsis"> {{v.sectionName}}</p>
           <span>{{v.doctorOnline}}位医生在线</span>
         </li>
@@ -63,6 +66,11 @@
       </div>
       <docutorItem v-for="(v,i) in doctorList" :key="i" :doctorItem="v" @doctorDetail="doctorDetail"
         @goChart="goChart" />
+
+         <div class="no-doctor1" v-if="doctorList.length==0">
+          <span class="bg-image"></span>
+          <span class="no-text"> 暂无数据</span>
+        </div>
     </div>
 
     <Xfooter />
@@ -102,7 +110,8 @@
         swiperList: [],
         swiperOption: {
           autoplay: true,
-        }
+        },
+        
       };
     },
     computed: {
@@ -238,7 +247,9 @@
   .active {
     color: #00a0e9 !important;
   }
-
+.no-section{
+  background-image: url('../../assets/images/default-section.png');
+}
   .vg {
     padding-bottom: 110px
   }
