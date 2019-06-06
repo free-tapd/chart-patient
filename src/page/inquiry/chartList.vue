@@ -1,141 +1,6 @@
 <template>
   <div class="docutor-home vg">
-    <!-- 服务内容 -->
-    <ul class="patient-service" v-show="false">
-      <li :class="{'active-patient':serviceId==v.id}" v-for="(v,i ) in patientService" :key="i"
-        @click.stop="serviceId=v.id">{{v.title}}</li>
-    </ul>
-    <div class="go" v-if="serviceId==1">
 
-      <!-- 医生主页 -->
-      <div class="docutor-message flex-r">
-        <div class="img-box1">
-          <img src="../../assets/images/inquiry/head.jpg" alt>
-          <!-- <div class="code" @click="isCode=!isCode">
-          <span class="funbg"></span>
-        </div> -->
-          <div class="online-box">
-            <p>在线</p>
-          </div>
-        </div>
-        <div class="flex-c profession">
-          <!-- first -->
-          <div class="docutor-lv flex-r">
-            <!-- 医生信息 -->
-            <div class="docutor-name">
-              <p class="docutor-title">李素珍</p>
-              <p>
-                <span>主任医师</span>
-                <span>妇科</span>
-              </p>
-              <p>
-                <span>河北大学第二医院</span>
-              </p>
-            </div>
-            <!-- 关注 -->
-            <div class="follow-btn " @click="isCode=!isCode"> <span class="funbg"></span></div>
-          </div>
-          <!-- seconed -->
-
-        </div>
-      </div>
-      <!-- 一生的业务信息 -->
-      <div class="follow-msg flex-r">
-        <div class="msg-item">
-          <p>324</p>
-          <p>咨询量</p>
-        </div>
-        <div class="msg-item">
-          <p>324</p>
-          <p>评价量</p>
-        </div>
-        <div class="msg-item">
-          <p>324</p>
-          <p>关注量</p>
-        </div>
-      </div>
-      <!--zixunfangshi -->
-      <ul class="consultative flex-r">
-        <!-- 咨询 -->
-
-        <li @click="isShow=!isShow">
-          <!-- <img src="../../assets/images/inquiry/pic3.png" alt> -->
-          <img src="../../assets/images/inquiry/pic3_active.png" alt>
-          <p class="consultative-title">图文咨询</p>
-          <span>￥30元/次</span>
-        </li>
-        <li @click.stop="changeJump('/videoSicker',{})">
-          <img src="../../assets/images/inquiry/pic2.png" alt>
-          <!-- <img src="../../assets/images/inquiry/pic2_active.png" alt> -->
-          <p class="consultative-title">视频问诊</p>
-          <span>￥30元/次</span>
-        </li>
-        <li>
-          <img src="../../assets/images/inquiry/pic1.png" alt>
-          <!-- <img src="../../assets/images/inquiry/pic1_active.png" alt> -->
-          <p class="consultative-title">电话问诊</p>
-          <span>￥30元/次</span>
-        </li>
-        <li>
-          <img src="../../assets/images/inquiry/pic4.png" alt>
-          <!-- <img src="../../assets/images/inquiry/pic4_active.png" alt> -->
-          <p class="consultative-title">预约挂号</p>
-          <span>￥30元/次</span>
-        </li>
-      </ul>
-      <!-- 擅长 -->
-      <div class="skill">
-        <div class="list-skill vux-1px-b">
-          <p class="flex-r">
-            <span class="icons funbg icon-label_1"><span>擅长</span></span>
-
-          </p>
-          <div class="inner ellipsis">Edgewise矫正技术、Tip—Edge矫治技术、MBT矫治技术、活动矫治技术、功能性矫治技术</div><span
-            class="iconfont icon-right"></span>
-        </div>
-        <div class="list-skill">
-          <p class="flex-r">
-            <span class="icons funbg icon-label_1"> <span>简介</span></span>
-
-          </p>
-          <!-- <div class="inrto-list">
-          新生儿疾病、哮喘、咳嗽、腹泻、心系疾病
-          <span class="iconfont icon-right"></span>
-        </div> -->
-          <div class="inner ellipsis">Edgewise矫正技术、Tip—Edge矫治技术、MBT矫治技术、活动矫治技术、功能性矫治技术 </div><span
-            class="iconfont icon-right"></span>
-        </div>
-      </div>
-      <!-- 评价 -->
-      <div class="discuess">
-        <div class="flex-r discuess-title vux-1px-b">
-          <!-- <span class="icons funbg icon-pinjia"></span> -->
-          <span>评价</span>
-          <p><span>更多</span><span class="iconfont icon-right"></span></p>
-
-        </div>
-        <div class="discuess-inner flex-c vux-1px-b" v-for="v in 5" :key="v">
-          <div class="star-box flex-r">
-            <span>王**</span>
-            <div class="star">
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-            </div>
-            <span>2017-10-22</span>
-          </div>
-          <div class="dis-tag">
-            <span v-for="v in 4" :key="v">及时回复</span>
-          </div>
-          <div class="dis-inner">
-            医生对我的回答很有帮助，以后小病可以先在线问医生啦，真方
-            便！
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!--mescroll滚动区域的基本结构-->
     <!-- <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit"> -->
@@ -144,8 +9,54 @@
     <div ref="mescroll" class="mescroll">
       <!-- chart list  -->
       <!-- 聊天室  -->
-      <div class="chart-box" v-show="serviceId==2">
+      <div class="chart-box" v-show="serviceId==2" ref="chartHeight">
         <ul class="chart">
+
+          <!-- 订单消息 -->
+          <li class="chart-item">
+            <!-- 聊天时间 -->
+            <div class="chart-date">
+              {{orderItem.createTime}}
+            </div>
+            <!-- 聊天信息 -->
+            <!-- 1 医生 0 患者 -->
+            <div class="chart-line active-recivice">
+              <figure>
+                <img :src="doctorMessage.doctorImg" alt="" @error="setErrorImg">
+              </figure>
+
+              <!-- <img src="../../assets/images/default-doctor.png" alt="" v-else> -->
+              <!-- <img src="http://192.168.1.81:8888/frontpage/images/demo1.jpg" > -->
+              <div class="chart-inner-box">
+                <!-- 聊天文字 -->
+                <!-- <button @click="close1"> 关闭</button> -->
+                <!--  @click="changeJump('/sureInquiry')" -->
+                <div class="chart-inner">
+
+                  性名：{{orderItem.patientName}} <br />
+                  年龄：{{orderItem.age}}岁 <br />
+                  {{orderItem.description}}<br />
+                  <div class="img-box" v-if="orderItem.picUrl">
+                    <figure v-for="pic in (orderItem.picUrl).split(',')" :key="pic">
+                      <img :src="pic" alt="" @click="bigImg($event)">
+                    </figure>
+                  </div>
+                </div>
+                <!-- 聊天图片 -->
+                <!-- <div class="chart-img" v-if="v.msgType==4">
+                  <img :src="v.content" alt="">
+                </div> -->
+              </div>
+            </div>
+            <!-- 聊天提醒 -->
+            <div class="chart-warm">
+
+              您的问题已通知医生，医生将利用空余时间回复，如果觉得病情严重紧急，建议前往医院就诊。
+              本次咨询在24小时内有效，若您已付费但医生没有来得及回答，咨询费用将自动退还。
+
+            </div>
+
+          </li>
           <!-- <li class="chart-item" v-for="(v,i) in chartPannelList" :key="i" -->
           <li class="chart-item" v-for="(v,i) in chatRecordList" :key="i"
             v-if="(v.userType==1 ||v.userType==0) && !v.content=='' ">
@@ -156,8 +67,11 @@
             <!-- 聊天信息 -->
             <!-- 1 医生 0 患者 -->
             <div class="chart-line" :class="{'active-recivice':v.userType==1}">
-              <img src="../../assets/images/inquiry/head.jpg" alt="" v-if="v.userType==1">
-              <img src="http://192.168.1.81:8888/frontpage/images/demo1.jpg" alt="" v-else>
+              <figure>
+                <img :src="doctorMessage.doctorImg" alt="" @error="setErrorImg" v-if="v.userType==1">
+                <img src="../../assets/images/inquiry/default-patient.png" alt="" v-else>
+              </figure>
+
               <div class="chart-inner-box">
                 <!-- 聊天文字 -->
                 <div class="chart-inner" v-if="v.msgType==1 ">
@@ -165,7 +79,7 @@
                 </div>
                 <!-- 聊天图片 -->
                 <div class="chart-img" v-if="v.msgType==4">
-                  <img :src="v.content" alt="">
+                  <img :src="v.content" alt="" @click="bigImg($event)">
                 </div>
               </div>
             </div>
@@ -181,9 +95,9 @@
 
 
           <!-- 点击去评价 -->
-          <li class="evaluate-box" v-if="false">
+          <li class="evaluate-box" v-if="isClose">
             <p class="chart-status">患者结束咨询</p>
-            <div class="chart-message">
+            <div class="chart-message" v-if="isMyEvaluateOver">
               <p class="evaluate-title">待评价</p>
               <span>咨询已经结束，请对医生的服务进行评价。</span>
               <div class="click-evaluate vux-1px-t" @click="isEvaluate=!isEvaluate">
@@ -194,26 +108,27 @@
 
           </li>
           <!-- 评价已完成 -->
-          <li class="over-evaluate" v-if="false">
+          <li class="over-evaluate" v-if="isOverEvaluate">
             <div class="evaluate-status">
               <span>患者评价：</span>
               <p class="evaluate-num">
-                <i class="funbg"></i>
-                <i class="funbg"></i>
-                <i class="funbg"></i>
-                <i class="funbg"></i>
-                <i class="funbg"></i>
+                <i class="funbg " v-for="(v,i) in (curStar+1)" :key="i"></i>
               </p>
             </div>
             <!-- ev -->
             <div class="evaluate-result">
-              <p class="help-btn">有帮助</p>
-              <p class="help-inner"> 有帮助，医生很专业，辛苦了，感谢！</p>
+              <div class="help-btn-box">
+                <p class="help-btn" v-for="(v,i) in evaluateLabel" v-if="v.isSel">{{v.lableName}}</p>
+              </div>
+
+              <p class="help-inner"> {{evaluateContent}}</p>
             </div>
           </li>
         </ul>
         <div class="chart-input">
-          <chartInput @goSend="send" />
+          <chartInput @goSend="send" :docMsg="doctorMessage" :payPrice="orderItem.orderPrice"
+            :isCloseChart="isCloseChart" :isShowCream="isShowCream" :childClose="isClose" @closeChart="closechart"
+            @alertIsClose="alertIsClose" @showCream="showCream" />
         </div>
       </div>
       <!-- </mescroll-vue> -->
@@ -222,38 +137,26 @@
     <div class="cover" v-if="isEvaluate">
       <div class="chart-pannel">
         <p class="evaluate-title vux-1px-b"> <span class="iconfont icon-baseline-close-px"
-            @click="isEvaluate=!isEvaluate"></span> 评论</p>
+            @click="isEvaluate=!isEvaluate"></span> 评价</p>
         <div class="content">
           <!-- 评价的医生 -->
           <p class="evaluate-doctor">
-            <span>李苏素</span>
-            <span>医生</span>
+            <span>{{doctorMessage.doctorName}}</span>
+            <span>{{doctorMessage.titleName}}</span>
           </p>
           <!-- 评价的分数 -->
           <p class="evaluate-star">
-            <i class="funbg icon-star"></i>
-            <i class="funbg icon-star"></i>
-            <i class="funbg icon-star"></i>
-            <i class="funbg icon-star"></i>
-            <i class="funbg icon-star"></i>
+            <!-- <i class="funbg icon-star" v-for="v in 1" :key="v"  @click="selStar"></i> -->
+            <i class="funbg icon-greystar " :class="{'icon-star':curStar>=i}" v-for="(v,i) in 5" :key="i"
+              @click="selStar(i)"></i>
+
           </p>
-          <p class="evaluate-text">非常满意</p>
+          <p class="evaluate-text">{{getText(this.curStar+1)}}</p>
           <!-- evaluate-label -->
           <ul class="evaluate-label-box">
-            <li>
-              回复及时
+            <li v-for="(v,i) in evaluateLabel " :key="i" :class="{'active-label':v.isSel}" @click="v.isSel=!v.isSel">
+              {{v.lableName}}
             </li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li class="active-label">耐心</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
-            <li>艺术高明</li>
           </ul>
 
         </div>
@@ -261,88 +164,24 @@
         <div class="editor-evaluate">
           <div class="text-box">
             <div class="text-box2">
-              <textarea name="" id="" placeholder="记录问诊中的感受和建议，给予其他病友帮助">
+              <textarea name="" id="" maxlength="100" placeholder="记录问诊中的感受和建议，给予其他病友帮助" :value="evaluateContent" @input="wordSize($event.target.value)" >
 
             </textarea>
             </div>
-
+              <p class="word-num"> <span>{{wordLen}}</span>/100</p>
           </div>
 
         </div>
         <!-- success btn  over-->
-        <div class="success-btn">
+        <div class="success-btn" @click="setEvaluate">
           完成
         </div>
       </div>
     </div>
 
-    <!--  tab 服务内容 -->
-    <!-- tab -> index -->
-    <div class="service-content" v-if="serviceId==3">
 
-      <ul class="text-list">
-        <li class="img-box">
-          <img src="../../assets/images/inquiry/head.jpg" alt="">
-          <div class="text-title">
-            <p>图文咨询</p>
-            <span>单次服务</span>
-          </div>
-        </li>
-        <li class="price">
-          <span>￥30.00</span>
-          <p>服务中</p>
-        </li>
 
-      </ul>
-      <cellInput type="0" title="服务医生" value="赵秀敏" :isRight="true" />
-      <cellInput type="0" title="服务期限" value="24小时" :isRight="true" />
-      <div class="service-content-warm">
-        <p class="title">服务内容</p>
-        <p class="content">
-          1.本次咨询为限时付费咨询，限时24小时。医生将在24小时内回复您的问题。
-          2.为珍惜您的咨询时间，请全部围绕病情进行沟通，避免无关内容。
-          3.如果付费24小时后，医生没有进行回复，订单将自动取消并全部退款至您的账户。
-        </p>
-      </div>
-    </div>
 
-    <!-- 咨询弹窗 -->
-    <div class="cover" v-if="isShow">
-      <div class="pannel-box">
-        <div class="img-box">
-          <img src="https://ww1.sinaimg.cn/large/663d3650gy1fq66vw1k2wj20p00goq7n.jpg" alt>
-          <p>李淑珍</p>
-        </div>
-        <!-- 咨询条目 -->
-        <div class="dis-box">
-          <p class="dis-title">图文资讯</p>
-          <div class="dis-price">
-            <p>
-              <span>￥</span>
-              <span class="price-num">80</span>
-            </p>
-            <p>
-              <a>￥100</a>
-            </p>
-          </div>
-          <!-- 选择日期 -->
-          <ul class="dis-day">
-            <li v-for="(v,i) in dayArr" :key="v" :class="{'active-day':cur==i}" @click="cur=i">{{v}}</li>
-          </ul>
-          <!-- 服务内容 -->
-          <div class="dis-inner">
-            <p>服务说明</p>
-            <span>
-              1.本次咨询为限时付费咨询，文字/图片方式交流，限时（24小时）
-              信息。医生将在24小时内回复您的问题。
-              2.为珍惜您的咨询时间，请全部围绕病情进行沟通，避免无关内容
-              3.如果付费24小时后，医生没有进行回复，订单将自动取消并全部退款至您的账户。
-            </span>
-          </div>
-        </div>
-        <div class="dis-btn" @click="goSeek">立即咨询</div>
-      </div>
-    </div>
 
     <div class="cover" v-if="isCode" @click="isCode=!isCode">
       <div class="co">
@@ -372,6 +211,14 @@
         立即咨询
       </div>
     </div>
+    <div class="cover" v-show="imgShow" @click=" imgShow=!imgShow" style="background-color:rgba(0,0,0,1)">
+      <div class="big-img">
+        <figure>
+          <img src="" alt="" ref="bigImgShow">
+        </figure>
+
+      </div>
+    </div>
 
   </div>
 </template>
@@ -379,8 +226,11 @@
   import {
     Qrcode,
     dateFormat,
-    Previewer 
+    Previewer
   } from "vux";
+  import {
+    getAge
+  } from '@/utils/age'
   // 引入mescroll的vue组件
   import MescrollVue from 'mescroll.js/mescroll.vue'
   import cellInput from "@/components/cellInput";
@@ -394,6 +244,10 @@
   // 引入mescroll.min.js和mescroll.min.css
   import MeScroll from 'mescroll.js'
   import 'mescroll.js/mescroll.min.css'
+  import defaultImg from "@/assets/images/default-doctor.png"
+  import {
+    setTimeout
+  } from 'timers';
   export default {
     data() {
       return {
@@ -421,18 +275,27 @@
         chartDate: dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss'),
         isCloseChart: false,
         isEvaluate: false,
-        doctorMessage: [],
-        path: 'ws://192.168.0.204:8787/websocket?roomId=123&userId=${patientId}&type=inquiry&token=token&userType=patient',
+        // doctorMessage: [],
+        path: '',
         socket: "",
         pageSize: 10,
-        pageNum: 1,
+        pageNum: 2,
         chatRecordList: [], //聊天记录
-        firstChatRecordList:[],
+        firstChatRecordList: [],
         mescroll: null,
-        mescrollDown: {
-          callBack: this.downCallback,
 
-        },
+        orderItem: {},
+        isClose: false,
+        isShowCream: false,
+        doctorMessage: {}, //医生详情的数据
+        evaluateLabel: [],
+        // curLabel:0,
+        curStar: -1,
+        evaluateContent: "",
+        isOverEvaluate: false,
+        isMyEvaluateOver: true,
+        imgShow: false,
+        messageType: null
         //   mescrollUp: {
         //   callback: this.upCallback,
         //   htmlNodata: '<p class="upwarp-nodata">-- 已经到底了 --</p>',
@@ -451,11 +314,20 @@
       cellInput,
       chartInput,
       MescrollVue,
-      Previewer 
+      Previewer
 
     },
     computed: {
-      ...mapState(['chartPannelList', 'patientId'])
+      ...mapState(['chartPannelList', 'patientId']),
+         wordLen() {
+        return this.evaluateContent.length;
+      },
+
+    },
+    created() {
+
+      this.getOrderDetail()
+      this.getdoctorDetail()
     },
     mounted() {
       setInterval(() => {
@@ -470,31 +342,86 @@
       this.mescroll = new MeScroll(this.$refs.mescroll, { // 在mounted生命周期初始化mescroll,以确保您配置的dom元素能够被找到.
         down: {
           auto: true, // 是否在初始化完毕之后自动执行下拉回调callback; 默认true
+          mustToTop: true,
+          resetClass: "mescroll-downwarp-reset",
           callback: this.downCallback // 下拉刷新的回调
         },
-        // up: {
-        //   auto: true, // 是否在初始化时以上拉加载的方式自动加载第一页数据; 默认false
-        //   callback: this.upCallback, // 上拉回调,此处可简写; 相当于 callback: function (page) { upCallback(page); }
-        //   page: {
-        //     num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
-        //     size: 10 // 每页数据的数量
-        //   },
-        //   noMoreSize: 5, // 如果列表已无数据,可设置列表的总数量要大于等于5条才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
-        //   toTop: { // 配置回到顶部按钮
-        //     src: './static/mescroll/mescroll-totop.png'
-        //   }
-        // }
+
       })
-      this.readyInit()
+
+
+      this.$nextTick(() => {
+        // this.firstData();
+        this.getEvaluateLabel()
+        this.getUserInfo()
+        this.pageNum = 1
+      })
+      setTimeout(() => {
+        this.readyInit()
+      }, 500);
     },
     methods: {
+      setErrorImg(e) {
+        console.log(e);
+        //  console.log(e.target.src);
+        e.target.src = defaultImg
+
+
+      },
+
       // mescroll组件初始化的回调,可获取到mescroll对象
       mescrollInit(mescroll) {
         this.mescroll = mescroll // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
       },
-      readyInit(){
-        console.log(document.querySelector('.chart-box').offsetHeight);
-        
+      readyInit() {
+        console.log('当前聊天的高度');
+        console.log(this.$refs.fot);
+
+        let innHeight = this.$refs.chartHeight.offsetHeight;
+        let boxHeight = this.$refs.mescroll.offsetHeight;
+        this.$refs.mescroll.scrollTop = (innHeight + 30 - boxHeight)
+        console.log(this.$refs.chartHeight.offsetHeight);
+        console.log(this.$refs.mescroll.offsetHeight);
+        console.log(this.$refs.chartHeight.clientHeight);
+
+      },
+        wordSize(val) {
+        this.evaluateContent = val
+
+      },
+      firstData() {
+        let {
+          doctorId,
+          roomId,
+          userType,
+          orderNo,
+          orderId
+        } = this.$route.query;
+        let params = {
+          orderNo,
+          orderId,
+          page: "1",
+          limit: "10",
+          order: "desc",
+          sidx: "create_time"
+        }
+        this.$get('inquiryContent/getInquiryContentList', params).then(res => {
+          if (res.code == 0) {
+            let a = this.unshiftBack(res.data.list);
+            a.forEach(v => {
+
+              // v.createTime = v.createTime.replace(/\-/g, "/");
+              // v.createTime = dateFormat(new Date(v.createTime), 'YYYY-MM-DD HH:mm:ss')
+            })
+            this.chatRecordList = a
+            setTimeout(() => {
+              this.readyInit()
+            }, 200)
+
+
+          }
+
+        })
       },
       /* 下拉刷新的回调 */
       downCallback() {
@@ -502,16 +429,17 @@
         // 联网加载数据
         let {
           doctorId,
+          orderId,
           roomId,
           userType,
           orderNo
         } = this.$route.query;
         let params = {
           orderNo,
-          orderId: "9",
+          orderId: orderId,
           page: this.pageNum,
           limit: this.pageSize,
-          order: "asc",
+          order: "desc",
           sidx: "create_time"
         }
         this.$get('inquiryContent/getInquiryContentList', params).then(res => {
@@ -521,29 +449,42 @@
               currPage,
               totalPage
             } = res.data;
-            let a = res.data.list;
-            a.forEach(v=>{
-               v.createTime = dateFormat(new Date(v.createTime), 'YYYY-MM-DD HH:mm:ss')
-            })
-            if (totalPage == 1) {
-              this.chatRecordList = a;
+            let a = this.unshiftBack(res.data.list);
+            // let a=res.data.list
+            // debugger;
+            console.log(a);
 
-            }
-            if(currPage==1){
-              this.firstChatRecordList=a;
-            }
+            a.forEach(v => {
+              //   function GetDateDiff(startDiffTime, endDiffTime) {
+              // //将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式 
+              // startTime = startDiffTime.replace(/\-/g, "/");
+              // endTime = endDiffTime.replace(/\-/g, "/");
+              // }();
+              // v.createTime = v.createTime.replace(/\-/g, "/");
+              // v.createTime = dateFormat(new Date(v.createTime), 'YYYY-MM-DD HH:mm:ss')
+            })
+            // if (totalPage == 1) {
+            //   this.chatRecordList = [];
+            // }
+            // if (currPage == 1) {
+            //   this.firstChatRecordList = a;
+            // }
             if (currPage < totalPage) {
-              this.chatRecordList = [...a,...this.chatRecordList];
+              this.chatRecordList = [...a, ...this.chatRecordList];
               this.pageNum++;
 
             }
-            if(currPage==totalPage){
-               this.chatRecordList = [...a,...this.chatRecordList];
+            if (currPage == totalPage) {
+              this.chatRecordList = [...a, ...this.chatRecordList];
+              this.pageNum++;
               this.$vux.toast.text('没有更多记录')
               this.mescroll.lockDownScroll(true)
             }
 
 
+            // setTimeout(() => {
+            //   this.readyInit()
+            // }, 200)
           }
 
         }).catch(res => {
@@ -556,6 +497,27 @@
         })
 
       },
+      // 聊天倒叙
+      unshiftBack(arr) {
+        let a = []
+        // let b = arr.map(v => a.unshift(v))
+        arr.forEach(v => {
+          a.unshift(v)
+        })
+        return a
+      },
+      //防止用户没有登陆或者userid
+      //获取用户接口
+      getUserInfo() {
+        this.$get('getUser/getUserDetil').then(res => {
+          if (res.code == 0) {
+            this.userInfo = res.data;
+
+            this.$store.commit('saveUserId', this.userInfo.inquiryUserId)
+          }
+        })
+      },
+
 
       // chart
       init() {
@@ -571,8 +533,11 @@
 
           } = this.$route.query;
           this.socket = new WebSocket(
-            `ws://192.168.1.152:8787/websocket?roomId=${orderNo}&userId=${this.patientId}&type=inquiry&token=${this.$store.state.token}&userType=${userType}`
+            `wss://qfkj.jiankanghebei.com/websocket/?roomId=${orderNo}&userId=${this.$store.state.userId}&type=inquiry&token=${this.$store.state.token}&userType=0`
           )
+          // this.socket = new WebSocket(
+          //   `ws://192.168.1.152:8787/websocket?roomId=${orderNo}&userId=${this.$store.state.userId}&type=inquiry&token=${this.$store.state.token}&userType=0`
+          // )
           // this.socket = new WebSocket(
           //   `ws://192.168.0.204:8787/websocket?roomId=123&userId=${this.patientId}&type=inquiry&token=token&userType=0`
           //   )
@@ -582,8 +547,11 @@
           this.socket.onerror = this.error
           // 监听socket消息
           this.socket.onmessage = this.getMessage
+          //监听关闭scoket 消息
+          this.socket.onclose = this.close;
         }
       },
+     
       open: function () {
         console.log("socket连接成功")
       },
@@ -600,19 +568,29 @@
         let a = JSON.parse(msg.data);
         // let a=this.chatRecordList;
         console.log(a.userType);
-        
+
         if (a.userType == '1' || a.userType == '0') {
           // a.createTime = dateFormat(new Date(a.createTime), 'YYYY-MM-DD HH:mm:ss')
           // this.$store.commit('saveChartList', a)
-          this.chatRecordList=[...this.chatRecordList,a];
+          this.messageType = a.msgType;
+          // debugger;
+          if(this.messageType==10){
+            this.closeLine()
+            return false;
+          }
+          this.chatRecordList = [...this.chatRecordList, a];
           console.log('当前的list');
-          
-          console.log(this.chatRecordList);
-          
-        }
 
+          console.log(this.chatRecordList);
+
+          // 重新计算高度
+          this.$nextTick(() => {
+            this.readyInit()
+          })
+
+        }
       },
-      send: function (msg) {
+      send(msg) {
         let {
           doctorId,
           roomId,
@@ -621,28 +599,115 @@
           orderId
         } = this.$route.query;
         let params = {
-          orderId ,
+          orderId,
           roomId: orderNo,
           type: "inquiry",
           orderNo,
-          fromUserId: this.patientId,
+          fromUserId: this.$store.state.userId,
           toUserId: doctorId,
           msgType: msg.msgType,
           content: msg.msg,
-          msgStatus: "",
-          userType
+          msgStatus: "0",
+          userType: "0",
+          patientName: this.orderItem.patientName,
+          ch: this.userInfo.channeIdentify,
+          pf: this.userInfo.platformAccount,
+          exp: this.userInfo.exp
         }
+        
+        
         this.socket.send(JSON.stringify(params))
         // this.$store.commit('saveChartList',params)
         console.log('我传的值');
-
+// console.log(this.socket);
         console.log(params)
       },
-      close: function () {
+      close(msg) {
+        console.log(msg);
+        console.log(msg.type);
+        if (msg.type == 'close') {
+          // alert(this.messageType)
+          if (this.messageType != 10) {
+            
+            // alert('重新连接')
+            this.init()
+          
+          }
+
+          // 重新计算高度
+          setTimeout(() => {
+            this.readyInit()
+          }, 500)
+
+
+          // this.updataOrderSate()
+        }
+
         console.log("socket已经关闭")
+
+      },
+      // 打开下面功能栏，【 图片 结束聊天。。。。。】
+      showCream(msg) {
+        this.isShowCream = msg;
+        this.isShowCream = !this.isShowCream;
+      },
+      // 打开当前的查询是for关闭的弹窗
+      alertIsClose(msg) {
+        this.isCloseChart = msg;
+        this.isCloseChart = !this.isCloseChart;
+      },
+      // 关闭当前的链接
+      closechart(msg) {
+        // console.log(msg);
+        this.isCloseChart = msg.isCloseChart;
+
+        if (msg.set) {
+          let {
+            doctorId,
+            roomId,
+            userType,
+            orderNo,
+            orderId
+          } = this.$route.query;
+          let params = {
+            orderId,
+            roomId: orderNo,
+            type: "inquiry",
+            orderNo,
+            fromUserId: this.$store.state.userId,
+            toUserId: doctorId,
+            msgType: "10",
+            content: "",
+            msgStatus: "",
+            userType: "0",
+            patientName: this.orderItem.patientName,
+            ch: this.userInfo.channeIdentify,
+            pf: this.userInfo.platformAccount,
+            exp: this.userInfo.exp
+          }
+          this.socket.send(JSON.stringify(params))
+          console.log('我传的值');
+          console.log(params);
+
+         this.socket.close();
+          this.isClose = !this.isClose
+          this.updataOrderSate()
+
+        }
+        this.isCloseChart = !this.isCloseChart;
+        //  关闭当的功能栏
+        this.isShowCream = !this.isShowCream;
+        // 重新计算高度
+        // this.readyInit()
+
       },
 
+      closeLine(){
+          this.socket.close();
+          this.isClose = !this.isClose
+          // this.updataOrderSate()
 
+      },
 
 
 
@@ -674,18 +739,163 @@
 
           });
       },
-      // 获取医生详情
-      getdoctorDetail() {
-        this.$post('doctor/getDoctorDetail', {
-          platformAccount: this.platformName,
-          doctorId: 1
+      //获取订单详情
+      getOrderDetail() {
+        this.$get('inquiryOrder/getInquiryOrderInfo', {
+          orderNo: this.$route.query.orderNo
         }).then(res => {
-          console.log(res)
-          if (res.code == 1) {
-            this.doctorMessage = res.data;
+          if (res.code == 0) {
+            let a = res.data;
+            // a.createTime = a.createTime.replace(/\-/g, "/");
+            // a.createTime = dateFormat(new Date(a.createTime), 'YYYY-MM-DD HH:mm:ss')
+            this.$set(a, 'age', getAge(res.data.patientIdcard))
+            this.orderItem = a;
+            if (this.orderItem.orderState != 0 && this.orderItem.orderState != 1) {
+              // alert(1)
+              this.isClose = true;
+              // console.log(this.isClose);
+
+            }
+            // 订单详情获取完成以后在计算高度
+
           }
         })
       },
+      // 获取医生详情
+      getdoctorDetail() {
+        this.$post('doctor/getDoctorDetail', {
+          platformAccount: this.$store.state.platformName,
+          doctorId: this.$route.query.doctorId
+        }).then(res => {
+          console.log(res)
+          if (res.code == 0) {
+            let a = res.data;
+
+
+            this.doctorMessage = a;
+          }
+        })
+      },
+      /** 
+       * @ 评价
+       * @ api wzJudge/saveJudge
+       * @ 聊天结束后评价
+       * */
+
+      setEvaluate() {
+        let {
+          doctorId,
+          orderNo,
+          orderId
+        } = this.$route.query
+        if(!this.evaluateContent){
+          this.$vux.toast.text('请填写评价内容');
+          return false;
+        }
+        let a = this.evaluateLabel.filter(v => v.isSel == true);
+        let b = a.map(v => v.lableName)
+        console.log(b);
+
+        let params = {
+          "doctorId": doctorId,
+          "userId": this.$store.state.userId,
+          "starts": this.curStar + 1,
+          "judgeLable": b.join(','),
+          "judgeContent": this.evaluateContent,
+          "updateUser": "",
+          "patientName": this.orderItem.patientName,
+          "judgeCheck": "",
+          "orderId": orderId,
+          "orderNo": orderNo
+        }
+        this.$post('wzJudge/saveJudge', params).then(res => {
+          if (res.code == 0) {
+            console.log(res.data);
+            this.isOverEvaluate = true;
+            this.isEvaluate = !this.isEvaluate;
+            // 评价完成隐藏点击评价
+            this.isMyEvaluateOver = false
+          }
+        })
+      },
+      /** 
+       * @ 获取评价的接口
+       * @ 为了减少http 只是在结束聊天请求聊天的label
+       * */
+
+      getEvaluateLabel() {
+        this.$get('WzJudgeLable/getWzJudgeLable').then(res => {
+          if (res.code == 0) {
+            res.data.forEach(v => {
+              this.$set(v, "isSel", false)
+            })
+            this.evaluateLabel = res.data;
+
+          }
+        })
+      },
+      /** 
+       * @ 点击选择评价的星星数量
+       * 
+       */
+      selStar(index) {
+        console.log(index);
+
+        this.curStar = index
+
+      },
+      getText(index) {
+        let starText = ""
+        switch (index) {
+          case 1:
+            starText = "很不满意";
+            break;
+          case 2:
+            starText = "不满意";
+            break;
+          case 3:
+            starText = "勉强接受"
+            break;
+          case 4:
+            starText = "满意"
+            break;
+          case 5:
+            starText = "非常满意"
+            break
+        }
+        return starText;
+      },
+      //  结束订单更改状态
+      updataOrderSate() {
+        this.$post('inquiryOrder/updateOrderStatus', {
+          orderNo: this.$route.query.orderNo,
+          orderState: "2"
+        }).then(res => {
+          if (res.code == 0) {
+            console.log(res);
+
+          }
+        })
+      },
+      /** 
+       * @ titile 图片放大功能
+       * 
+       * @ 
+       * */
+
+      bigImg(e) {
+        console.log(e);
+        this.imgShow = !this.imgShow;
+        console.log(this.$refs.bigImgShow);
+
+        this.$refs.bigImgShow.src = e.target.src;
+      }
+
+
+    },
+    destroyed() {
+      // alert('离开')
+      this.mescroll.destroy();
     }
   };
 
@@ -695,8 +905,9 @@
   .mescroll {
     position: fixed;
     top: 0px;
-    bottom: 0;
+    bottom: 0px;
     height: auto;
+    overflow-y: scroll;
   }
 
   @import url('../../styles/doctorHome.less');
@@ -1323,7 +1534,28 @@
   }
 
   .icon-star {
-    background-image: url("../../assets/images/gold_star.png");
+    background-image: url("../../assets/images/gold_star.png") !important;
+  }
+
+  .icon-greystar {
+    background-image: url('../../assets/images/grey_star.png')
+  }
+
+  .big-img {
+    width: 100%;
+    height: auto;
+
+    >figure {
+      max-width: 100%;
+      height: auto;
+      display: block;
+
+      >img {
+        height: 100%;
+        width: 100%;
+        display: block;
+      }
+    }
   }
 
 </style>

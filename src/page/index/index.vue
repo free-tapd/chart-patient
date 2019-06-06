@@ -1,5 +1,8 @@
 <template>
-  <div class="vg">
+<div class="vg">
+
+
+  <div class="co">
     <div class="search-inner" ref="searchs">
       <searchBox @focusHandler="focusHandler" />
     </div>
@@ -10,12 +13,13 @@
         <!-- <swiper :list="swiperList"  aspect-ratio dots-position="center" :show-dots="false" :show-desc-mask="false"></swiper> -->
         <swiper :options="swiperOption">
           <swiper-slide v-for="(v,i) in swiperList" :key="i"><img :src="v.img" :alt="v.name"
-              style="max-width:100%; display:block;height:100%;"></swiper-slide>
+              style="max-width:100%; display:block;height:100%;border-radius:10px"></swiper-slide>
 
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
       </div>
     </div>
+    <!-- <button @click="testLogin"> 测试APP交互 </button> -->
     <!-- 咨询记录，我的医生 -->
     <ul class="infor-list">
       <li class="vux-1px-r" @click="changeJump('/consultList')">
@@ -41,7 +45,7 @@
     <!-- 热门科室 -->
     <div class="hot-sections">
       <div class="title-box vux-1px-b">
-        <span>热门科室</span>
+        <span>推荐科室</span>
         <p @click.stop="changeJump('/indexSearch',{platformName:platformName,type:1})">更多 <span
             class="iconfont icon-right"></span> </p>
 
@@ -52,14 +56,14 @@
           <div class="ios-img funbg" :style="{backgroundImage:'url('+v.sectionIcon+')'}" v-if="v.sectionIcon && v.sectionIcon!='undefined'"> </div>
           <div class="ios-img funbg no-section"  v-else> </div>
           <p class="ellipsis"> {{v.sectionName}}</p>
-          <span>{{v.doctorOnline}}位医生在线</span>
+          <span>{{v.num}}位医生在线</span>
         </li>
       </ul>
     </div>
     <!-- 热门医生 -->
     <div class="hot-sections">
       <div class="title-box vux-1px-b">
-        <span>热门医生</span>
+        <span>推荐医生</span>
         <p @click.stop="changeJump('/indexSearch',{platformName:platformName,type:2})">更多 <span
             class="iconfont icon-right"></span> </p>
 
@@ -74,7 +78,7 @@
     </div>
 
     <Xfooter />
-  </div>
+  </div></div>
 </template>
 <script>
   import docutorItem from "@/components/docutorItem";
@@ -85,6 +89,7 @@
     mapMutations
   } from "vuex";
   import 'swiper/dist/css/swiper.css' //在全局没引入，这里记得要！
+  import terminal from "@/utils/terminal"
   import {
     swiper,
     swiperSlide
@@ -133,11 +138,13 @@
         // document.getElementsByTagName("body")[0].style.overflow = "hidden";
         console.log(this.$refs.searchs.offsetHeight)
         this.offset = this.$refs.searchs.offsetHeight;
-        document.querySelector('.vg').style.paddingTop = this.offset + "px";
+        document.querySelector('.co').style.paddingTop = this.offset + "px";
         this.getIntroDoctorList();
         this.getIntroSection();
         this.getSwiperList();
         this.isFooter = new Number(this.$route.query.isFooter)
+        this.$store.commit('saveBackUrl', window.location.href);
+        this.payService()
       })
 
 
@@ -213,7 +220,7 @@
         })
       },
       goChart(item) {
-        this.changeJump('/chartList', {
+        this.changeJump('/doctorHome', {
           doctorId: item.doctorId
         })
       },
@@ -237,8 +244,39 @@
           })
         }
 
-      }
+      },
+       // 用户登录
+      getLoginUrl() {
+        return this.$post('userLogin/getLogin')
+      },
+      payService() {
+        // this.isClick=true;
+        // 假如用户没有登录
+        // 根据token 判断
+        // 
+        if (!this.$route.query.token) {
+          this.getLoginUrl().then(res => {
+            if (res.code == 0) {
+                this.$store.commit('saveLoginUrl',res.data );
+              // window.location.href = res.data + encodeURIComponent(this.$store.state.backurl + '&token');
+              // window.history.pushState(state, state.title, state.url);
 
+            }
+          })
+        } 
+      },
+      testLogin(){
+        // if(isiOS){
+        //   // window.loginClick()
+
+        //   window.webkit.messageHandlers.loginClick.postMessage(JSON.stringify({name:'xyy',result:"调取成功"}));
+        
+        //   window.webkit.messageHandlers.shareResult.postMessage(null)
+        //    console.log(window.webkit.messageHandlers.shareResult.postMessage(null));
+        //   // window.webkit.messageHandlers.home.postMessage(true)
+        // }
+        window.terminal.AddPatientResult()
+      },
     }
   };
 
@@ -250,7 +288,7 @@
 .no-section{
   background-image: url('../../assets/images/default-section.png');
 }
-  .vg {
+  .co {
     padding-bottom: 110px
   }
 
@@ -316,10 +354,11 @@
 
       >.ios-img {
         margin-right: 30px;
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         display: block;
         background-image:url('../../assets/images/inquiry/record.png');
+        
         // border-radius: 50%;
 
       }

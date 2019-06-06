@@ -33,9 +33,10 @@ import {
 import store from '../store'
 // import * as types from './store/types'
 import router from '../router'
+import terminal from "../utils/terminal"
 
 // axios 配置
-axios.defaults.timeout = 30000
+axios.defaults.timeout = 8000
 // axios.defaults.baseURL = 'http://192.168.0.49:8081/inquiry-api'
 // axios.defaults.baseURL="http://192.168.0.204:8081/inquiry-api/
 // axios.defaults.baseURL="http://192.168.0.199:8081/inquiry-api/" //刘跃龙
@@ -47,31 +48,64 @@ axios.defaults.responseType = "json";
 // axios.defaults.headers.post["Content-Type"] =
 //   "application/x-www-form-urlencoded";
 axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
-
+let timer=null;
 axios.interceptors.request.use(
 
   config => {
     Vue.$vux.loading.show({
-      text: 'Loading'
+      text: '正在加载中...'
      })
-    if (store.state.token) {
-      config.headers.token = ` ${store.state.token}`
-    } 
+    timer= setTimeout(()=>{
+      Vue.$vux.loading.hide()
+      // Vue.$vux.toast.text('网络延迟')
+     },axios.defaults.timeout)
+    //  debugger;
+  
     let {pf,ch,exp,isFooter,token}=router.app._route.query;
+    console.log('三兄弟');
+    console.log(pf,ch,exp);
     if(pf&&ch&&exp){
+      console.log('第二次三兄弟');
+      console.log(pf,ch,exp);
+      
       store.commit('saveHeader',{pf,ch,exp});
       store.commit('savePlatform',pf);
+      localStorage.setItem('headers',JSON.stringify({pf,ch,exp}) )
 
     }
       if(token){
+        // console.log('有token进入');
         store.commit('saveToken',token);
         config.headers.exp=store.state.token;
       }
-    if(store.state.headerMessage.pf||store.state.headerMessage.ch||store.state.headerMessage.exp){
-      config.headers.pf=store.state.headerMessage.pf;
-      config.headers.ch=store.state.headerMessage.ch;
-      config.headers.exp=store.state.headerMessage.exp
-    }
+      if (store.state.token) {
+        config.headers.token = ` ${store.state.token}`
+      } 
+      console.log('打印当前的store.header');
+      console.log(store.state);
+      
+      console.log(store.state.headerMessage);
+      
+      if(store.state.headerMessage.pf && store.state.headerMessage.ch && store.state.headerMessage.exp){
+        console.log('到底有没有');
+        
+        config.headers.pf=store.state.headerMessage.pf;
+        config.headers.ch=store.state.headerMessage.ch;
+        config.headers.exp=store.state.headerMessage.exp
+        console.log(config.headers.pf);
+        console.log(config.headers.ch);
+        console.log(config.headers.exp);
+      }
+       if(JSON.parse(localStorage.getItem('headers'))){
+        console.log('到底有没有localstorage');
+        let a=JSON.parse( localStorage.getItem('headers'))
+        config.headers.pf=a.pf;
+        config.headers.ch=a.ch;
+        config.headers.exp=a.exp
+        console.log(config.headers.pf);
+        console.log(config.headers.ch);
+        console.log(config.headers.exp);
+      }
    
 
     // console.log(store.state.headerMessage);
@@ -83,6 +117,8 @@ axios.interceptors.request.use(
   },
   err => {
     return Promise.reject(err)
+    Vue.$vux.loading.hide()
+    alert('请求err')
   },
 )
 
@@ -91,18 +127,38 @@ axios.interceptors.response.use(
   response => {
   // 隐藏
 Vue.$vux.loading.hide()
-    console.log('响应数据')
-    console.log(response)
+// clearTimeout(timer)
+    
+    // 保存当前的location
+    // store.commit('saveBackUrl', window.location.href);
+    console.log('+++++++++++++++++++++====');
+    // alert('打算分代理商卡')
+    console.log(response.data.code);
+    // debugger
     switch(response.data.code){
-      case "100001":
+      
+      case 100001:
       console.log('跳转app登录 ')
+      // debugger
+     store.commit('saveBackUrl', `${window.location.href}`);
+      window.terminal.toLogin()
       break;
+      // Vue.$vux.toast.text(response.data.msg)
+    }
+    if(response.data.code!=0){
+      Vue.$vux.toast.text(response.data.msg)
     }
     return response
-
   },
   error => {
+   
+    Vue.$vux.loading.hide();
+    Vue.$vux.toast.text('网络错误');
     if (error.response) {
+      console.log('错误');
+      console.log(error);
+      
+      Vue.$vux.toast.text('网络错误')
       // tryHideFullScreenLoading();
       //   switch (error.response.status) {
       //     case 401:

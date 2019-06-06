@@ -4,11 +4,11 @@
     <div class="docutor-message flex-r vux-1px-b ">
       <div class="img-box">
         <figure>
-          <img src="../assets/images/default-doctor.png" alt="" class="img-user" width="100%" v-if="!doctorItem.doctorImg"/>
-           <img :src="doctorItem.doctorImg" alt class="img-user" width="100%" v-else/>
+          <!-- <img src="../assets/images/default-doctor.png" alt="" class="img-user" width="100%" v-if="!doctorItem.doctorImg"/> -->
+           <img :src="doctorItem.doctorImg" alt class="img-user" width="100%" @error="setErrorImg"/>
         </figure>
        
-        <p class="is-online-box" :style="{backgroundColor:doctorItem.online=='1'?'#5cb3f1':'#c2c2c2'}"> <span>{{doctorItem.online=='1'?"在线":"离线"}}</span> </p>
+        <p class="is-online-box" :style="{backgroundColor:doctorItem.online=='1'?'#2d9ff1':'#c2c2c2'}"> <span>{{doctorItem.online=='1'?"在线":"离线"}}</span> </p>
       </div>
       <div class="flex-c profession ">
         <!-- first -->
@@ -23,8 +23,10 @@
             <!-- 所属医院 -->
             <p class="hospital-name">{{doctorItem.hospitalName}}</p>
             <div class="score">
-              <span class="icon-star-pink funbg"></span>
-              <span>{{doctorItem.judgeStars}}</span>
+             
+              <!-- <span class="icon-star-pink funbg" v-for="v in parseInt(doctorItem.judgeStars)?parseInt(doctorItem.judgeStars):0" :key="v"></span> -->
+             <span class="icon-star-pink funbg"></span>
+              <span style="color:#FB8716;">  &nbsp;&nbsp;{{doctorItem.judgeStars }}分</span>
               <span>{{doctorItem.orderCount}}次咨询</span>
             </div>
           </div>
@@ -40,17 +42,17 @@
         <div class="follow-msg flex-r ellipsis"><span style="color:#808080;">擅长:</span> {{doctorItem.goodAt}}
         </div>
         <div class="server-price flex-r vux-1px-t">
-          <p class="flex-r" v-for="(fun,index) in doctorItem.doctorFunList" :key="index" v-if="fun.hidden!=0">
-            <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOff})`}" v-if="!(new Number(fun.status))"></i>
-            <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOn})`}" v-else></i>
-            <span v-if="(new Number(fun.status))">￥{{fun.presentPrice}}</span>
-            <span v-else style="color:#999">暂无开通</span>
+          <p class="flex-r" v-for="(fun,index) in doctorItem.doctorFunList" :key="index">
+            <!-- <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOff})`}" v-if="fun.status=='0'"></i> -->
+            <i class="funbg" :style="{backgroundImage:`url(${fun.funIconOn})`}" v-if="fun.status=='1'"></i>
+            <span v-if="fun.status=='1'">￥{{fun.presentPrice}}</span>
+            <!-- <span v-else style="color:#999">暂无开通</span> -->
           </p>
           <!-- <p class="flex-r">
             <i class="funbg icon-video"></i>
             <span>￥60</span>
           </p> -->
-          <div class="zixun-btn" @click.stop="goChart">
+          <div class="zixun-btn">
             立即咨询
           </div>
         </div>
@@ -59,6 +61,7 @@
   </div>
 </template>
 <script>
+import defaultImg from "@/assets/images/default-doctor.png"
   export default {
     props:{
       doctorItem:{
@@ -75,6 +78,13 @@
       goChart(item){
         this.$emit('goChart',item)
       },
+        setErrorImg(e){
+        //  console.log(e);
+        //  console.log(e.target.src);
+        e.target.src=defaultImg
+
+         
+       }
     }
   };
 

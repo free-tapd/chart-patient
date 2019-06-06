@@ -29,3 +29,12 @@ export const saveToken=(state,change)=>{
 export const saveBackUrl=(state,change)=>{
   state.backurl=change;
 }
+export const saveHospitalCode=(state,change)=>{
+  state.hospitalCode=change
+}
+export const saveUserId=(state,change)=>{
+  state.userId=change;
+}
+export const saveLoginUrl=(state,change)=>{
+  state.loginUrl=change;
+}

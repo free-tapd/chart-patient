@@ -3,7 +3,10 @@
     <ul class="doctor-box">
       <li class="doctor-item" v-for="(v,i) in doctorArr " :key="i" @click="changeJump('/doctorHome',{doctorId:v.doctorId})">
         <div class="img-box">
-          <img :src="v.doctorImg" alt="">
+          <figure>
+             <img :src="v.doctorImg" @error="setErrorImg" alt=""/>
+          </figure>
+         
           <div class="is-online" :class="{'active-online':v.online=='true'}">
             <p>{{v.online=='true'?"在线":"离线"}} </p>
           </div>
@@ -23,6 +26,7 @@
   </div>
 </template>
 <script>
+import defaultImg from "@/assets/images/default-doctor.png"
   export default {
     data(){
       return {
@@ -45,18 +49,26 @@
             this.doctorArr=res.data;
           }
         })
-      }
+      },
+         setErrorImg(e){
+         console.log(e);
+        //  console.log(e.target.src);
+        e.target.src=defaultImg
+
+         
+       }
     }
   }
 
 </script>
 <style lang="less" scoped>
 
-active-online{
+.active-online{
      background-color: #5CB3F1!important;
 }
   .my-doctor {
     >.doctor-box {
+      background-color: #fff;
       color: #333;
       font-size: 24px;
 
@@ -74,12 +86,16 @@ active-online{
           align-items: center;
         //   margin-right: 47px;
 
-          >img {
+          >figure {
             width: 80px;
             height: 80px;
             display: block;
-            border-radius: 50%;
-
+           
+            >img{
+              width: 100%;
+              height: 100%;
+              display: block; border-radius: 50%;
+            }
 
           }
 

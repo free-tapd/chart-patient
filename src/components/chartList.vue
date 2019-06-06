@@ -1,10 +1,13 @@
 <template>
   <div class="docutor-list">
     <!-- 医生列表   页面 -->
-    <div class="docutor-message flex-r " @click="jump">
+    <div class="docutor-message flex-r " >
       <div class="img-box">
-        <img :src="orderItem.doctorImg" alt>
-        <p class="is-online-box"> <span >{{orderItem.online?"在线":"离线"}}</span> </p>
+        <figure>
+          <img :src="orderItem.doctorImg" @error="setErrorImg" alt>
+        </figure>
+        
+        <p class="is-online-box" :class="{'active-bg':orderItem.online=='false'}"> <span >{{orderItem.online=='true'?"在线":"离线"}}</span> </p>
       </div>
       <div class="flex-c profession vux-1px-b">
         <!-- first -->
@@ -30,17 +33,17 @@
             <i></i>
             <p>在线</p>
           </div> -->
-          <span class="chart-date"> {{orderItem.createTime}}</span>
+          <span class="chart-date"> {{orderItem.orderCreateTime}}</span>
         </div>
         <!-- seconed -->
         <!-- 一生的业务信息 -->
-        <div class="follow-msg flex-r ellipsis" > {{orderItem.content}} <span class="badge-box"><badge text="1"></badge></span>
+        <div class="follow-msg flex-r ellipsis" > {{orderItem.content}} <span class="badge-box" v-if="orderItem.orderState==1"><badge :text="orderItem.wdStatus" v-if="orderItem.wdStatus"></badge></span>
         </div>
         <!-- 暂未评价 -->
         <div class="no-evluate" v-if="orderItem.orderState!=1"> 
             <div class="my-eva">
                 <span>我的评价</span>
-                <i class="icon-star-pink funbg" v-for="(num,index) in (orderItem.judgeStars+0) " :key="index"></i>
+                <i class="icon-star-pink funbg" v-for="(num,index) in (parseInt(orderItem.judgeStars)?parseInt(orderItem.judgeStars):0 ) " :key="index"></i>
                
             </div>
              <div class="zixun-btn">
@@ -68,7 +71,7 @@
 </template>
 <script>
 import {Badge} from "vux";
-
+import defaultImg from "@/assets/images/default-doctor.png"
   export default {
     props:{
       orderItem:{
@@ -85,15 +88,22 @@ import {Badge} from "vux";
         console.log(typeof ((this.orderItem.judgeStars)+0) )
       },
       methods:{
-        jump(){
-          this.$emit('againChart',{orderItem:this.orderItem})
-        }
+       setErrorImg(e){
+         console.log(e);
+        //  console.log(e.target.src);
+        e.target.src=defaultImg
+
+         
+       }
       }
 
   };
 
 </script>
 <style lang="less" scoped>
+.active-bg{
+  background-color: #c1c1c1 !important;
+}
 .badge-box{
     position: absolute;
     right: 0;
@@ -128,12 +138,17 @@ color:rgba(153,153,153,1);
     >.img-box {
       flex: 1;
         padding: 30px 0; 
-      >img {
+      >figure {
         display: block;
         border-radius: 50%;
         width: 80px;
         height: 80px;
         margin-bottom: 18px;
+        >img{
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
       }
 
       >.is-online-box {

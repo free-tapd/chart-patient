@@ -9,16 +9,18 @@
             <!-- <span ></span> -->
             <span class="patient-name">{{v.patientName}}</span>
           </li>
-          <li @click="changeJump('/addPatient')">
+          <li @click="thirdParty">
             <span class="iconfont icon-jiahao" style="color:#666;"></span>
           </li>
+          <!-- <li @click="go">模拟登陆</li> -->
         </ul>
       </div>
-      <div class="authorization-box">
+      <div class="authorization-box" v-if="false">
         <!-- 授权 -->
         <div class="authorization">
           <span> 报告授权</span>
-          <div class="authorization-btn" @click="changeJump('/queryReport')">
+          <div class="authorization-btn"
+            @click="changeJump('/queryReport',{patientId:patientList[cur].patientId,idCard:patientList[cur].idCard,patientName:patientList[cur].patientName})">
             授权
           </div>
         </div>
@@ -54,29 +56,29 @@
             4.如就诊过，提供医生诊断、治疗经过<br>
             5.既往病史 -->
             <div class="text-box">
-              <textarea name="" id="" cols="30" maxlength="500" rows="5" placeholder="请输入你的病状" :value="sickValue"
-                @input="wordSize($event.target.value)">
+              <textarea name="" id="" cols="30" maxlength="500" rows="5" placeholder="" :value="sickValue"
+                @input="wordSize($event.target.value)"  @blur="toLitmitTop">
 
               </textarea>
             </div>
-
+            <!-- 1 症状，疾病和身体情况&#13;&#10;2 症状发生的时间,症状部位，持续时间有无伴随症状 &#10;3 吃过什么药物 &#10;4 如有诊过,提供医生诊断，治疗经过&#10;5既往病史 -->
             <p class="example-text"> {{wordLen}}/500</p>
           </li>
         </ul>
         <!-- 上传照片 -->
         <div class="add-proto vux-1px-t">
-          <p>上传照片</p>
+          <!-- <p>上传照片</p> -->
           <div class="file-img-box">
-            <div class="file-img">
+            <div class="file-img funbg">
               <form id="uploadForm" enctype="multipart/form-data" method="post">
                 <input type="file" accept="image/*" name="file" capture="camera" @change="uploadImage($event)"
                   class="imageBox" v-if="isAndroid()" multiple="multiple" />
                 <input type="file" accept="image/*" name="file" @change="uploadImage($event)" class="imageBox"
                   multiple="multiple" v-else>
               </form>
-              <span class="iconfont icon-jiahao" style="color:#aaa;"></span>
+              <!-- <span class="iconfont icon-jiahao" style="color:#aaa;"></span> -->
             </div>
-            <div class="info-title" v-if="maxPicLen==0">
+            <div class="info-title" v-if="picUrl.length==0">
               <p class="info1">添加照片(可选)</p>
               <p class="info2">
                 可添加患处、病历、检查单，请保证图片清晰
@@ -85,9 +87,11 @@
             </div>
             <div class="img-list">
               <div class="result" v-for="(v,i) in picUrl" :key="i">
-                <img :src="v" alt="">
+                <img :src="v" alt="" @click="bigImg($event)">
+                <span class="close" @click.stop="cancleImg(v,i)"> <span class="iconfont icon-baseline-close-px"></span>
+                </span>
               </div>
-              
+
             </div>
 
 
@@ -98,7 +102,7 @@
 
         <div class="protocol vux-1px-t" @click="isReceive=!isReceive">
           <span class="funbg icon-prococal" :class="{'icon-nprococal':!isReceive}"></span>
-          <span>接收<span style="color:#2D9FF1;">
+          <span>接受<span style="color:#2D9FF1;">
               《河北医科大学第二医院在线问诊协议》
             </span> </span>
         </div>
@@ -112,9 +116,9 @@
     <div class="footer-btn vux-1px-t">
       <div class="total-money">
         <span>合计:</span>
-        <span>{{30|formatMoney}}</span>
+        <span>{{$route.query.price|formatMoney}}</span>
       </div>
-      <div class="dis-btn" @click.stop="payService">立即咨询</div>
+      <div class="dis-btn " :class="{'active-click':isClick,'active-pro':!this.isReceive}" @click.stop="payService">立即咨询</div>
     </div>
     <!-- 参考样例弹窗 -->
     <div class="cover" v-if="isEx">
@@ -155,15 +159,28 @@
         <div class="sure-btn" @click="isWarm=!isWarm">确定</div>
       </div>
     </div>
+   <div class="cover" v-show="imgShow" @click=" imgShow=!imgShow" style="background-color:rgba(0,0,0,1)">
+      <div class="big-img">
+        <figure>
+          <img src="" alt="" ref="bigImgShow">
+        </figure>
 
+      </div>
+    </div>
   </div>
 </template>
 <script>
   import {
     base64
   } from 'vux'
-import { log } from 'util';
-import { decode } from 'punycode';
+  import {
+    log
+  } from 'util';
+  import {
+    decode
+  } from 'punycode';
+  import terminal from "@/utils/terminal"
+// import func from '../../../vue-temp/vue-editor-bridge';
   export default {
     data() {
       return {
@@ -175,20 +192,40 @@ import { decode } from 'punycode';
         patientList: [],
         picUrl: [],
         maxPicLen: 0,
-        patientMessage:{}
+        patientMessage: {},
+        userInfo:{},
+        isClick:false,
+        isSyncPatient:0,
+        addPatientUrl:'',
+        imgShow:false,
+
       }
     },
     mounted() {
-      this.getAddSicker();
-      this.$store.commit('saveBackUrl',window.location.href);
-      
+      // if(this.$store.state.token){
+        this.getAddSicker();
+      // this.$store.commit('saveBackUrl', `${window.location.href}&pf=${this.$store.state.headerMessage.pf}&ch=${this.$store.state.headerMessage.ch}&exp=${this.$store.state.headerMessage.exp}`);
+      this.getUserInfo()
+      // }
+   
+
     },
-    beforeRouteEnter(to,from,next){
+    beforeRouteEnter(to, from, next) {
       console.log(to);
       console.log(from);
+      console.log(this);
       
-      next();
+      //  this.getAddSicker();
+      // this.getUserInfo();
+      next(vm=>{
+        if(from.path=="/"){
+            vm.getAddSicker();
+            vm.getUserInfo()
+        }
+      
+      });
     },
+  
     computed: {
       wordLen() {
         return this.sickValue.length;
@@ -206,7 +243,40 @@ import { decode } from 'punycode';
         var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1); //判断是否是苹果手机，是则是true
         return isIos
       },
-      initState(){
+      go(){
+      // if(this.$store.state.backurl.includes('?')){
+      //   // debugger
+      //   console.log('进入第一个');
+      //   // store.commit('saveBackUrl', `${window.location.href}&pf=${store.state.headerMessage.pf}&ch=${store.state.headerMessage.ch}&exp=${store.state.headerMessage.exp}`);
+      //  let loginUrl = this.$store.state.loginUrl;
+      //   if(this.$store.state.backurl.includes('&token')){
+      //    let a =this.$store.state.backurl.split('&token=')
+         
+      //    console.log(a[0])
+      //     // debugger
+      //     // location.href=store.state.loginUrl+encodeURIComponent(a+'&token')
+      //     //  location.href=store.state.loginUrl+encodeURIComponent(a+'&token')
+      //     location.href= loginUrl +encodeURIComponent(a[0] +'&token=')
+          
+      //     // debugger;
+      //   }else{
+      //     location.href=loginUrl+encodeURIComponent(this.$store.state.backurl+'&token=')
+      //   }
+      // }
+      terminal.toLogin()
+      },
+      
+      bigImg(e) {
+        console.log(e);
+        this.imgShow = !this.imgShow;
+        console.log(this.$refs.bigImgShow);
+
+        this.$refs.bigImgShow.src = e.target.src;
+      },
+      toLitmitTop(){
+        window.scrollTop=0
+      },
+      initState() {
         // if(this.)
         // let result = '<img src="' + res.data.path + '" alt=""/>';
         //         this.$store.commit('savePicCase',this.picUrl)
@@ -215,20 +285,60 @@ import { decode } from 'punycode';
         //         div.className = "result"
         //         document.querySelector('.img-list').appendChild(div); //插入dom树
       },
-      selPatient(item,index){
-        this.cur=index;
-        this.patientMessage=item
+      // 选择就诊人信息
+      selPatient(item, index) {
+        this.cur = index;
+        this.patientMessage = item
+      },
+      //获取用户接口
+      getUserInfo(){
+        this.$get('getUser/getUserDetil').then(res=>{
+          if(res.code==0){
+            this.userInfo=res.data;
+
+            this.$store.commit('saveUserId',this.userInfo.inquiryUserId)
+          }
+        })
+      },
+      // 添加就诊人
+
+      thirdParty() {
+        console.log('点击就诊人');
+        console.log(this.isSyncPatient);
+        console.log(this.addPatientUrl);
+        if(this.patientList.length>=5){
+          this.$vux.toast.text('就诊人最多是5个!!!')
+        }else{
+        if(this.$store.state.headerMessage.ch == 'wechat_service_number'){
+             if (this.isSyncPatient == '1') {
+           location.href= this.addPatientUrl+ encodeURIComponent(window.location.href);
+          
+        } else {
+          this.changeJump('/addPatient')
+        }
+        }else{
+          // 否则app
+          window.terminal.addPatient()
+        }
+      }
+        
+     
       },
       getAddSicker() {
         this.$get('Patient/getPatientList').then(res => {
+          console.log(res);
+          
           if (res.code == 0) {
             console.log(res)
-            if (res.code == 0) {
               this.patientList = res.data;
               // 默认第一个
-              this.patientMessage=this.patientList[0]
-            }
+            this.isSyncPatient=res.isSyncPatient;
+            this.addPatientUrl=res.addPatientUrl
+              this.patientMessage = this.patientList[0]
           }
+          // if(res.code==100001){
+          //   window.terminal.toLogin();
+          // }
         })
       },
       wordSize(val) {
@@ -236,7 +346,7 @@ import { decode } from 'punycode';
 
       },
       readFile(target) {
-        this.maxPicLen += target.files.length;
+        this.maxPicLen = this.picUrl.length;
         if (this.maxPicLen > 5) {
           this.$vux.toast.text('最多可以上传5张');
           return false;
@@ -266,7 +376,7 @@ import { decode } from 'punycode';
               console.log(res);
               if (res.code == 0) {
                 this.picUrl.push(res.data.path)
-              
+
                 // let result = '<img src="' + e.target.result + '" alt=""/>';
                 // let result = '<img src="' + res.data.path + '" alt=""/>';
                 // this.$store.commit('savePicCase',this.picUrl)
@@ -284,93 +394,143 @@ import { decode } from 'punycode';
       },
       //上传图片
       uploadImage(event) {
-   
+
         this.readFile(event.target)
-     
+
+      },
+      // 删除图片
+      cancleImg(item, index) {
+        this.picUrl.forEach((v, i) => {
+          if (index == i) {
+
+            this.picUrl.splice(index, 1)
+          }
+        })
       },
 
       // 用户登录
-      getLoginUrl(){
-        return  this.$post('userLogin/getLogin')
+      getLoginUrl() {
+        return this.$post('userLogin/getLogin')
       },
       payService() {
+      
         // 假如用户没有登录
         // 根据token 判断
-        if(!this.$store.state.token){
-           this.getLoginUrl().then(res=>{
-             if(res.code==0){
-               
-                window.location.href=res.data+encodeURIComponent(this.$store.state.backurl+'&token') ;
-                // window.history.pushState(state, state.title, state.url);
-               
-             }
-        })
-        }else{
+        if (!this.$store.state.token) {
+          this.getLoginUrl().then(res => {
+            if (res.code == 0) {
 
-          let {patientId,idCard,patientPhone,patientName} =this.patientMessage;
-        let params = {
-          "doctorId": this.$route.query.doctorId,
-          "functionId": this.$route.query.funId,
-          "patientId":patientId,
-          "patientIdcard": idCard,
-          "patientName": patientName,
-          "patientPhone": patientPhone,
-          "description": this.sickValue,
-          "picUrl": this.picUrl.join(','),
-          "payType": "WX-H5"
-        }
-        let _this = this;
-        _this.$post('inquiryOrder/payOrder', params).then(res => {
-          if (res.code == 0) {
-            const {
-              appId,
-              timeStamp,
-              nonceStr,
-              paySign,
-              package_
-            } = res.data;
+             window.terminal.toLogin();
+              // window.history.pushState(state, state.title, state.url);
 
-            _this.$wechat.config({
-              // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-              debug: true,
-              appId: appId, // 必填，公众号的唯一标识
-              timestamp: timeStamp, // 必填，生成签名的时间戳
-              nonceStr: nonceStr, // 必填，生成签名的随机串
-              signature: paySign, // 必填，签名，
-              jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表
-            });
-            _this.$wechat.ready(function () {
-              _this.$wechat.chooseWXPay({
-                // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                timestamp: timeStamp,
-                nonceStr: nonceStr, // 支付签名随机串，不长于 32 位
-                package: package_, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-                signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                paySign: paySign, // 支付签名
-                success: function (res) {
-                  //res返回信息只有errMsg并没有err_msg，都是自己开调试模式，log出来的！都是泪
-                  // 支付成功后的回调函数
-                  let {doctorId}=this.$route.query
-                  this.changeJump('/chartList',{doctorId:doctorId,roomId:"20190000524",userType:"0",orderNo:"20190000524",orderId:"9"})
-                },
-                cancel: function (res) {
-                  // 支付取消的回调函数
-                },
-                error: function (res) {
-                  // 支付失败的回调函数
-                }
-              });
-            })
-
-           
+            }
+          })
+        } else {
+            if(!this.sickValue  ){
+              this.$vux.toast.text('请填写病状描述');
+              return false;
+            }
+            if(this.sickValue.length<10){
+              this.$vux.toast.text('病状描述至少十个字');
+              return false;
+            }
+            if(!this.isReceive){
+              this.$vux.toast.text('你没有接受协议');
+              return false
+            }
+          let {
+            patientId,
+            idCard,
+            patientPhone,
+            patientName
+          } = this.patientMessage;
+          let params = {
+            "doctorId": this.$route.query.doctorId,
+            "functionId": this.$route.query.funId,
+            "patientId": patientId,
+            "patientIdcard": idCard,
+            "patientName": patientName,
+            "patientPhone": patientPhone,
+            "description": this.sickValue,
+            "picUrl": this.picUrl.join(','),
+            "payType": "WX-H5",
+            "clinicIds": [], //检查报告集合
+            "itemIds": [] //检验报告集合
           }
+          let _this = this;
+          _this.isClick=true;
+          _this.$post('inquiryOrder/payOrder', params).then(res => {
+            if (res.code == 0) {
+              const {
+                appId,
+                timeStamp,
+                nonceStr,
+                paySign,
+                package_,
+                orderNo,
+                orderId
+              } = res.data;
+
+              _this.$wechat.config({
+                // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                debug: false,
+                appId: appId, // 必填，公众号的唯一标识
+                timestamp: timeStamp, // 必填，生成签名的时间戳
+                nonceStr: nonceStr, // 必填，生成签名的随机串
+                signature: paySign, // 必填，签名，
+                jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表
+              });
+              _this.$wechat.ready(function () {
+                _this.$wechat.chooseWXPay({
+                  // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                  timestamp: timeStamp,
+                  nonceStr: nonceStr, // 支付签名随机串，不长于 32 位
+                  package: package_, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                  signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                  paySign: paySign, // 支付签名
+                  success: function (res) {
+                    //res返回信息只有errMsg并没有err_msg，都是自己开调试模式，log出来的！都是泪
+                    // 支付成功后的回调函数
+                    let {
+                      doctorId
+                    } = _this.$route.query
+                      _this.changeJump('/chartList', {
+                        doctorId: doctorId,
+                        roomId: orderNo,
+                        userType: "0",
+                        orderNo: orderNo,
+                        orderId: orderId
+                        })
+                  },
+                  cancel: function (res) {
+                    // 支付取消的回调函数
+                  },
+                  error: function (res) {
+                    // 支付失败的回调函数
+                  }
+                });
+              })
+              // 下单成功
+              // let {
+              //   doctorId
+              // } = this.$route.query
+              // this.changeJump('/chartList', {
+              //   doctorId: doctorId,
+              //   roomId: orderNo,
+              //   userType: "0",
+              //   orderNo: orderNo,
+              //   orderId: orderId
+              // })
+            }
 
 
-        })
-                let {doctorId}=this.$route.query
-                  this.changeJump('/chartList',{doctorId:doctorId,roomId:"20190000524",userType:"0",orderNo:"20190000524",orderId:"9"})
-      }
- 
+          }).finally(res=>{
+            console.log('执行finally');
+            this.isClick=false;
+          })
+
+        }
+
       }
 
     }
@@ -381,9 +541,21 @@ import { decode } from 'punycode';
   .vg {
     padding-bottom: 125px;
   }
-
+  .active-click{
+    pointer-events: none;
+  }
+  .active-pro{
+    background-color: #c1c1c1!important;
+  }
   .imageBox {
     opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
   }
 
   .active-sel {
@@ -457,18 +629,23 @@ import { decode } from 'punycode';
     }
 
     >.add-person {
+      flex-wrap: wrap;
       padding: 30px 0;
       display: flex;
       align-items: center;
+      
+
 
       >li {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 149px;
+        width: 24%;
         height: 66px;
         background: rgba(238, 238, 238, 1);
         border-radius: 4px;
+        margin-left: 1%;
+        margin-bottom: 1%;
 
         >.patient-name {
           font-size: 28px;
@@ -478,7 +655,7 @@ import { decode } from 'punycode';
       }
 
       >li:not(:first-child) {
-        margin-left: 20px;
+        // margin-left: 1%;
       }
     }
 
@@ -521,13 +698,14 @@ import { decode } from 'punycode';
 
         >.file-img {
           position: relative;
-          width: 90px;
-          height: 90px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px dashed #aaa;
+          width: 100px;
+          height: 100px;
+          // display: flex;
+          // align-items: center;
+          // justify-content: center;
+          // border: 1px dashed #aaa;
           margin-right: 20px;
+          background-image: url('../../assets/images/upload.png');
         }
 
         >.info-title {
@@ -556,6 +734,14 @@ import { decode } from 'punycode';
             width: 90px;
             height: 90px;
             margin-left: 15px;
+            position: relative;
+
+            >.close {
+              position: absolute;
+              right: -8px;
+              top: -32px;
+            }
+
             >img {
               width: 100%;
               height: 100%;
@@ -789,7 +975,7 @@ import { decode } from 'punycode';
       height: 88px;
       background: rgba(45, 159, 241, 1);
       border-radius: 10px;
-      bottom: 50px;
+      bottom: 20px;
       left: 50%;
       margin-left: -150px;
       text-align: center;
@@ -806,5 +992,20 @@ import { decode } from 'punycode';
   .icon-nprococal {
     background-image: url("../../assets/images/jzr_ico_chose_nor@2x.png");
   }
+  .big-img {
+    width: 100%;
+    height: auto;
 
+    >figure {
+      max-width: 100%;
+      height: auto;
+      display: block;
+
+      >img {
+        height: 100%;
+        width: 100%;
+        display: block;
+      }
+    }
+  }
 </style>

@@ -13,13 +13,13 @@
               <div class="offices-name flex-c">
                 <div class="off-list">
                   <i class="funbg icon-nprococal" :class="{'icon-prococal':v.isCheck}" @click.stop="clickList(v)"></i>
-                  <p>{{v.modalityType}}</p>
+                  <p>{{v.itemName}}</p>
 
                 </div>
               </div>
               <div class="pay-money flex-c">
                 <div class="money-num">
-                  {{v.examDate}} </div>
+                  {{v.reportTime}} </div>
               </div>
             </div>
             <!-- <span class="off-date"> 收据号：12345678910234567891010</span> -->
@@ -36,10 +36,10 @@
       </div>
    
       <!--  -->
-      <div class="add-btn" v-if="false">
+      <div class="add-btn" >
         保存
       </div>
-       <div class="add-btn cancle" style="background-color:#FF5345;">
+       <div class="add-btn cancle" style="background-color:#FF5345;" v-if="false">
         删除
       </div>
     </div>
@@ -115,7 +115,6 @@
         }else{
           this.isAll=false
         }
-        return isAll;
       },
       //点击全选按钮
       clickAll(){
@@ -123,6 +122,17 @@
         this.reportList.forEach(v=>{
           v.isCheck=this.isAll
         })
+      },
+
+      // 点击保存
+      saveList(){
+        let arr=[];
+        this.reportList.forEach(v=>{
+          if(v.isCheck){
+            arr.push(v);
+          }
+        })
+        // 保存用户的
       }
 
     }

@@ -1,43 +1,32 @@
 <template>
   <div class="report vg">
-    <Xtab :tabArr="tabArr" />
+    <Xtab :tabArr="tabArr" @getItem="getItem"/>
     <ul class="hospital-message">
-      <li class="">
+      <li class="vux-1px-b">
         <div class="img-box">
           <i class="funbg icon-user"></i>
-          <span>张素贞</span>
+          <span>{{$route.query.patientName}}</span>
         </div>
         <!-- <span class="iconfont icon-right1" style="color:#BFBFBF;"></span> -->
       </li>
-    </ul>
-     <popup-picker :popup-title="'hello world'" :title="'title1'" :data="arr" v-model="picker2" @on-show="onShow"
-      @on-hide="onHide" @on-change="onChange" :placeholder="'please select'">
-      <div slot="title">
-        <ul class="hospital-message">
-         <li class="">
+      <li class="vux-1px-b" @click.stop="selHospital=!selHospital">
         <div class="img-box">
           <i class="funbg"></i>
-          <span>河北医科大学第二医院</span>
+          <span>{{currHospital.hospitalName}}</span>
         </div>
         <span class="iconfont icon-right1" style="color:#BFBFBF;"></span>
       </li>
-        </ul>
-      </div>
-    </popup-picker>
-        <popup-picker :popup-title="'选择就诊卡'"  :data="cardPicker" v-model="picker1" @on-show="onShow"
-      @on-hide="onHide" @on-change="onChange"  @on-shadow-change="sure">
-      <div slot="title">
-        <ul class="hospital-message">
-          <li class="">
-            <div class="img-box">
-              <i class="funbg icon-card"></i>
-              <span style="font-weight:400;">{{cardMessage[0].cardTypeName}}:{{cardMessage[0].cardNum}}</span>
-            </div>
-            <span class="iconfont icon-right1" style="color:#BFBFBF;"></span>
-          </li>
-        </ul>
-      </div>
-    </popup-picker>
+      <li class="" @click="selPatient=!selPatient">
+        <div class="img-box">
+          <i class="funbg icon-card"></i>
+          <span style="font-weight:400;" v-if="cardTypeName||cardNum">{{cardTypeName}}:{{cardNum}}</span>
+          <span style="font-weight:400;" v-else>暂无就诊卡</span>
+        </div>
+        <span class="iconfont icon-right1" style="color:#BFBFBF;"></span>
+      </li>
+    </ul>
+
+
 
     <!-- 选择时间 -->
     <ul class="sel-date">
@@ -74,29 +63,53 @@
     </div>
 
     <div class="btn-bg">
-      <div class="add-btn" @click="changeJump('/queryReportList')">
+      <div class="add-btn" @click="checkReport">
         立即查询
       </div>
     </div>
+
     <!-- 就诊卡列表 -->
-    <!-- <div class="picker-panne">
-      <p class="picker-title">选择就诊开</p>
-       <picker :data='cardPicker' v-model='picker1' @on-change="onChange" ></picker>
-    </div> -->
-    <!-- <popup-picker :popup-title="'hello world'" :title="'title1'" :data="arr" v-model="picker1" @on-show="onShow"
-      @on-hide="onHide" @on-change="onChange" :placeholder="'please select'">
-      <div slot="title">
-        <ul class="hospital-message">
-          <li class="vux-1px-b">
-            <div class="img-box">
-              <i class="funbg icon-card"></i>
-              <span style="font-weight:400;">{{cardMessage[0].cardTypeName}}:{{cardMessage[0].cardNum}}</span>
-            </div>
-            <span class="iconfont icon-right1" style="color:#BFBFBF;"></span>
+    <div class="cover" v-if="selPatient">
+
+
+      <div class="picker-panne">
+        <p class="picker-title vux-1px-b">选择就诊人 <span class="close " @click.stop="selPatient=!selPatient"> </span></p>
+        <!-- <picker :data='arr' v-model='picker1' @on-change="onChange" ></picker> -->
+        <!-- <picker :data='cardPicker' v-model='picker1' @on-change="onChange" ></picker> -->
+        <ul class="card-list">
+          <li class="vux-1px-b" v-for="(v,i) in cardMessage" :key="i" @click.stop="isCard=i">
+            <p class="card-message" :class="{'active-sel':isCard==i}">
+              <span class="card-name">{{v.cardTypeName}}</span>
+              <span class="card-num"> {{v.cardNum}}</span>
+            </p>
+            <span class="iconfont icon-iconfontcheck" style="color:#2D9FF1;" v-show="isCard==i"></span>
           </li>
         </ul>
+        <p class="add-patient">+添加就诊人</p>
       </div>
-    </popup-picker> -->
+    </div> <!-- 就诊卡列表 -->
+    <div class="cover" v-if="selHospital">
+
+
+      <div class="picker-panne">
+        <p class="picker-title vux-1px-b">选择医院 <span class="close " @click.stop="selHospital=!selHospital"> </span></p>
+        <!-- <picker :data='arr' v-model='picker1' @on-change="onChange" ></picker> -->
+        <!-- <picker :data='cardPicker' v-model='picker1' @on-change="onChange" ></picker> -->
+        <ul class="card-list">
+          <!-- <li class="vux-1px-b" v-for="(v,i) in cardMessage" :key="i" @click.stop="isCard=i">
+            <p class="card-message" :class="{'active-sel':isCard==i}">
+              <span class="card-name">{{v.cardTypeName}}</span>
+              <span class="card-num"> {{v.cardNum}}</span>
+            </p>
+            <span class="iconfont icon-iconfontcheck" style="color:#2D9FF1;" v-show="isCard==i"></span>
+          </li> -->
+          <picker :data='arr' v-model='picker1' :columns='2' @on-change="onChange"></picker>
+        </ul>
+        <!-- <p class="add-patient">+添加就诊人</p> -->
+      </div>
+    </div>
+
+
   </div>
 </template>
 <script>
@@ -109,11 +122,17 @@
       value: '2'
     }]
   ]
+  // data
+
   import Xtab from "@/components/tab";
+
   import {
     Picker,
-    PopupPicker
+    dateFormat
   } from 'vux'
+  import {
+    log
+  } from 'util';
   export default {
     data() {
       return {
@@ -124,14 +143,22 @@
           id: 2,
           title: "住院"
         }],
+        tabItem:{},
         arr: arr,
+        curCard: 0,
         cur: 0,
         cur1: 1,
-        isCard: false,
+        isCard: 0,
         cardMessage: {},
         cardPicker: [],
         picker1: [''],
-        picker2: ['']
+        picker2: [''],
+        selPatient: false,
+        selHospital: false,
+        currHospital: {},
+        jyReport:[],
+        jcReport:[]
+
       };
     },
     computed: {
@@ -140,40 +167,58 @@
       },
       patientId() {
         return this.$store.state.patientId
+      },
+      cardTypeName() {
+        let a = ''
+        if (this.cardMessage.length > 0) {
+          a = (this.cardMessage[this.curCard].cardTypeName)
+        }
+        return a;
+      },
+      cardNum() {
+        let a = ''
+        if (this.cardMessage.length > 0) {
+          a = (this.cardMessage[this.curCard].cardNum)
+        }
+        return a
       }
+
+
+
     },
     components: {
       Xtab,
       Picker,
-      PopupPicker
     },
     mounted() {
       this.getPatientCode()
       this.getHospitalMessage()
       this.gethospitalItem()
-      this.getReportList()
+      this.getCity();
+      // 默认
+      this.init();
     },
     methods: {
-      //       getReport(){
-      //         let params={
-      // 	"hospitalCode": this.hospitalCode,
-      // 	"patientId": this.patientId,
-      // 	"patientHisId": "",
-      // 	"cardNum": "",
-      // 	"idCard": "",
-      // 	"beginDate": "",
-      // 	"endDate": "",
-      // 	"patientType": 0
-      // }
-      //         this.$post('report/getPacsReport',{})
-      //       }
-      sure(){
+      sure() {
         console.log('sure')
+      },
+      init(){
+        // 默认等于第一个
+        this.tabItem=this.tabArr[0]
       },
       onChange(e) {
         console.log('onchange')
-        console.log(this.picker2)
         console.log(e);
+        if (e[1]) {
+          let hospitalMessage = this.arr.filter(v => {
+            return v.hospitalId == e[1]
+          })
+          //  console.log(hospitalMessage);
+          this.currHospital = hospitalMessage[0];
+          //  保存用户当前的行为
+
+
+        }
 
       },
       onShow() {
@@ -191,15 +236,6 @@
           if (res.code == 0) {
             // console.log(res)
             this.cardMessage = res.data
-            let a = [];
-            a = res.data.map((v, i) => ({
-              name: v.cardTypeName + v.cardNum,
-              value: i.toString(),
-              ...v
-            }))
-            this.cardPicker.push(a)
-            console.log(this.cardPicker);
-
           }
         })
       },
@@ -225,30 +261,147 @@
         })
       },
 
-      // 检验
-      // {
-      // 	"hospitalCode": "311003",
-      // 	"patientId": "123323",
-      // 	"patientHisId": "0014615933",
-      // 	"healthyCard": "A000130014615933",
-      // 	"idCard": "130125199402053512",
-      // 	"startDate": "2019-01-01",
-      // 	"endDate": "2019-05-23",
-      // 	"patientType": "0"
-      // }
-      // 检验报告 
-      getReportList() {
+      // 获取地级市
+
+      getCity() {
+        this.$post('doctor/getCityList', {
+          platformAccount: this.$store.state.platformName
+        }).then(res => {
+          if (res.code == 0) {
+            let cityLub = [];
+            cityLub = res.data.map(v => ({
+              name: v.cityName,
+              value: v.cityId,
+              parent: '',
+              ...v
+            }))
+            this.cityList = cityLub
+            console.log('城市list');
+
+            console.log(cityLub);
+
+            let arr = [...cityLub];
+            this.cityList.forEach((v, i) => {
+
+              if (v.cityId) {
+                this.getSecondCity(v.cityId).then(res => {
+                  if (res.code == 0) {
+                    // this.hospitalList=res.data;
+                    if (res.data.length > 0) {
+                      let hospitalList = res.data.map(o => ({
+                        name: o.hospitalName,
+                        value: o.hospitalId,
+                        parent: v.cityId,
+                        ...o
+                      }))
+                      // console.log(hospitalList);
+
+                      arr.push(...hospitalList);
+                      // console.log(arr);
+
+                    }
+
+
+                  }
+                })
+              }
+
+            })
+            // console.log('最中的数组是')
+            // arr.push(...this.cityList);
+            // console.dir(arr);
+            // console.log(arr.length);
+            // console.log(arr[0]);
+            this.arr = arr;
+
+          }
+        })
+      },
+
+      // 根据地级市获取耳机区域
+      getSecondCity(cityId) {
+        return this.$post('doctor/getHospitalListByCityId', {
+          platformAccount: this.$store.state.platformName,
+          cityId
+        })
+      },
+        getItem(item){
+          console.log(item);
+          this.tabItem=item;
+        },
+
+      // 判断是检查还是检验
+      checkReport(){
+        
+          let {
+          patientId,
+          idCard
+        } = this.$route.query;
+        /** 
+         * cur1 :0 30天
+         * cur1:1 半年
+         * */
+        // 半年的时间戳
+        let curDate = new Date().getTime();
+        let  HALFYEAR = curDate - (365 * 24 * 60 * 60 * 1000) / 2;
+        let  DAY30 = curDate - (30 * 24 * 60 * 60 * 1000);
+        let startDate = this.cur1==1 ? HALFYEAR : DAY30;
         let params = {
           "hospitalCode": this.hospitalCode,
           "patientId": this.patientId,
-          "patientHisId": 0,
-          "healthyCard": "A000130014615933",
-          "idCard": "130125199402053512",
-          "startDate": "2019-01-01",
-          "endDate": "2019-05-23",
-          "patientType": "0"
+          "patientHisId": this.cardMessage[this.curCard].patientHisId,
+          "healthyCard": this.cardMessage[this.curCard].cardNum,
+          "idCard": idCard,
+          "startDate": this.dateString(startDate),
+          "endDate": this.dateString(),
+          "patientType": this.tabItem.id==1?0:1 //0是门诊 1住院
+        }
+        // cur 0 检验报告
+        // cur1 检查报告
+
+        if(this.cur){
+          this.getReportList(params)
+        }else{
+          this.getReportList2(params)
         }
 
+      },
+
+      // 检查报告 
+      getReportList(params) {
+      
+        // console.log(params);
+        this.$post('report/getPacsReport',params).then(res=>{
+          if(res.code==0){
+               res.data.forEach(v=>{
+              this.$set(v,'isCheck',0)
+            })
+            this.jcReport=res.data;
+             this.changeJump('/queryReportList',{data:JSON.stringify(res.data)})
+          }
+        })
+
+      },
+
+      // 检验报告
+
+      getReportList2(params){
+        this.$post('report/getLisReport',params).then(res=>{
+          if(res.code==0){
+            res.data.forEach(v=>{
+              this.$set(v,'isCheck',0)
+            })
+            this.jyReport=res.data;
+            
+            this.changeJump('/queryReportList1',{data:JSON.stringify(res.data)})
+          }
+          
+        })
+      },
+      // 时间序列化
+      dateString(date = new Date()) {
+
+        return dateFormat(new Date(date), 'YYYY-MM-DD')
       }
     }
   };
@@ -278,6 +431,10 @@
 
   .icon-card {
     background-image: url('../../assets/images/report/card.png') !important;
+  }
+
+  .active-sel {
+    color: #2D9FF1 !important;
   }
 
   .hospital-message {
@@ -414,6 +571,74 @@
     line-height: 88px;
     text-align: center;
 
+  }
+
+  .picker-panne {
+    min-height: 600px;
+    position: fixed;
+    box-shadow: 0px 1px 0px 0px rgba(230, 230, 230, 1);
+    border-radius: 20px 20px 0px 0px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #fff;
+    transition: all linear .5s;
+
+    >.picker-title {
+      padding: 30px 0;
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      color: rgba(51, 51, 51, 1);
+      position: relative;
+
+      >.close {
+        position: absolute;
+        right: 30px;
+        top: (114-40)/2px;
+        color: #A7A7A7;
+
+        &::after {
+          content: "\e615";
+          font-family: "iconfont" !important;
+          font-size: 30px;
+          font-style: normal;
+          -webkit-font-smoothing: antialiased;
+
+        }
+
+
+      }
+    }
+
+    >.card-list {
+      height: 400px;
+      overflow: scroll;
+      padding: 0 30px;
+
+      >li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px 0;
+
+        >.card-message {
+
+          font-size: 30px;
+          color: #333;
+        }
+      }
+
+
+    }
+
+    >.add-patient {
+      padding: 30px;
+      font-size: 30px;
+      font-weight: 500;
+      color: rgba(51, 51, 51, 1);
+      background: rgba(248, 248, 248, 1);
+    }
   }
 
 </style>

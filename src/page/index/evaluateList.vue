@@ -36,11 +36,19 @@ export default {
           // console.log(res)
           if (res.code == 0) {
             res.data.forEach(v=>{
-              v.judgeLable=v.judgeLable.split(',');
+              if(v.patientName) v.patientName=this.coverName(v.patientName);
+              if(v.judgeLable){
+                 v.judgeLable=v.judgeLable.split(',');
+              }
+             
             })
              this.evaluateArr = res.data;
           }
         })
+      },
+       coverName(str){
+      //  return   str.substr(0,1)+"*"+str.substr(str.length-1,str.length);
+       return   str.substr(0,1)+"**";
       },
   }
   

@@ -11,10 +11,10 @@
       <div class="docutor-message flex-r">
         <div class="img-box1">
           <figure>
-             <img :src="doctorMessage.doctorImg" alt v-if="doctorMessage.doctorImg"/>
-          <img src="../../assets/images/default-doctor.png" alt="" v-else />
+            <img :src="doctorMessage.doctorImg" alt @error="setErrorImg" />
+            <!-- <img src="../../assets/images/default-doctor.png" alt="" v-else /> -->
           </figure>
-         
+
           <!-- <div class="code" @click="isCode=!isCode">
           <span class="funbg"></span>
         </div> -->
@@ -27,9 +27,9 @@
           <div class="docutor-lv flex-r">
             <!-- 医生信息 -->
             <div class="docutor-name">
-              <p class="docutor-title">{{doctorMessage.doctorName}}</p>
+              <p class="docutor-title">{{doctorMessage.doctorName }}&nbsp;&nbsp; <span class="title-name">{{doctorMessage.titleName}}</span> </p>
               <p>
-                <span>{{doctorMessage.titleName}}</span>
+                <span></span>
                 <span>{{doctorMessage.sectionName}}</span>
               </p>
               <p>
@@ -64,13 +64,17 @@
 
         <li @click="jumpChart(v)" v-for="(v,i) in funArr" :key="i">
           <!-- <img src="../../assets/images/inquiry/pic3.png" alt> -->
-          <img :src="v.funIconOn" alt v-if="v.status=='1'"/>
-          <img :src="v.funIconOff" alt v-else/>
+          <figure>
+            <img :src="v.funIconOn" alt v-if="v.status=='1'" />
+            <img :src="v.funIconOff" alt v-else />
+          </figure>
+
           <p class="consultative-title" :style="{color:new Number(v.status)?'#333':'#999'}">{{v.funName}}</p>
           <span v-if="v.status=='1'">￥{{v.presentPrice}}元/次</span>
+          <!-- <span v-if="v.status=='0'" style="color:#999">￥{{v.presentPrice}}元/次</span> -->
           <span style="color:#999" v-else>暂未开通</span>
         </li>
-    
+
       </ul>
       <!-- 擅长 -->
       <div class="skill" @click="isGood=!isGood">
@@ -79,7 +83,7 @@
             <span class="icons funbg icon-label_1"><span>擅长</span></span>
 
           </p>
-          <div class="inner ellipsis">{{doctorMessage.goodAt}}</div><span class="iconfont icon-right"></span>
+          <div class="inner ellipsis">{{doctorMessage.goodAt?doctorMessage.goodAt:"暂无"}}</div><span class="iconfont icon-right" style="transform:rotate(90deg)"></span>
         </div>
         <div class="list-skill">
           <p class="flex-r">
@@ -90,37 +94,21 @@
           新生儿疾病、哮喘、咳嗽、腹泻、心系疾病
           <span class="iconfont icon-right"></span>
         </div> -->
-          <div class="inner ellipsis">{{doctorMessage.doctorInfo}} </div><span class="iconfont icon-right"></span>
+          <div class="inner ellipsis">{{doctorMessage.doctorInfo?doctorMessage.doctorInfo:"暂无"}} </div><span class="iconfont icon-right " style="transform:rotate(90deg)"></span>
         </div>
       </div>
       <!-- 评价 -->
       <div class="discuess">
-        <div class="flex-r discuess-title vux-1px-b">
+        <div class="flex-r discuess-title vux-1px-b" v-if="evaluateArr.length>0">
           <!-- <span class="icons funbg icon-pinjia"></span> -->
           <span>评价</span>
-          <p @click.stop="changeJump('/evaluateList',{doctorId:$route.query.doctorId})"><span>更多</span><span class="iconfont icon-right"></span></p>
+          <p @click.stop="changeJump('/evaluateList',{doctorId:$route.query.doctorId})"><span>更多</span><span
+              class="iconfont icon-right"></span></p>
 
         </div>
-        <div class="discuess-inner flex-c vux-1px-b" v-for="(v,i) in evaluateArr" :key="i">
-          <div class="star-box flex-r">
-            <span>{{v.patientName}}</span>
-            <div class="star">
-              <span class="star-list funbg icon-star" v-for="star in new Number(v.starts)" :key="star"></span>
-              <!-- <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span>
-              <span class="star-list funbg icon-star"></span> -->
-            </div>
-            <span>{{v.createTime}}</span>
-          </div>
-          <div class="dis-tag">
-            <span v-for="eva in v.judgeLable" :key="eva">{{eva}}</span>
-          </div>
-          <div class="dis-inner">
-
-            {{v.judgeContent}}
-          </div>
-        </div>
+    <!-- 引入组件 -->
+           <evaluateItem :evaluateItem="v" v-for="(v,i) in evaluateArr" :key="i"/>
+        <!-- import evaluateItem from "@/components/evaluateItem"; -->
       </div>
     </div>
     <!-- chart list  -->
@@ -364,7 +352,7 @@
       <div class="good-at">
         <div class="doc-msg">
           <h5> {{doctorMessage.doctorName}}</h5>
-          <p class="main-doc"> <span>主治医师</span> &nbsp;&nbsp; <span>中西医结合内科</span></p>
+          <p class="main-doc"> <span>{{doctorMessage.titleName}}</span> &nbsp;&nbsp; <span>{{doctorMessage.sectionName}}</span></p>
         </div>
         <div class="good-at-label">
           <i class="funbg icon-label_1">擅长</i>
@@ -395,10 +383,11 @@
               <img :src="v.funIconOn" alt="">
 
             </div>
-            <p class="server-intro"><span class="f-title">{{v.funName}}</span> <span class="s-title">使用图文的方式与医生沟通</span> </p>
+            <p class="server-intro"><span class="f-title">{{v.funName}}</span> <span class="s-title">使用图文的方式与医生沟通</span>
+            </p>
             <div class="money">
               <p>{{v.presentPrice}}元/次 </p>
-              <span class="iconfont icon-right1"></span>
+              <span class="iconfont icon-right1" ></span>
             </div>
           </li>
           <!-- <li class="vux-1px-b">
@@ -432,7 +421,8 @@
         <span class="icons funbg " :class="{'icon-pinjia1':!isFocus}"></span>
         <span>关注</span>
       </p>
-      <div class="consult-btn" @click="isRefer=!isRefer">
+      <div class="consult-btn" @click="isRefer=!isRefer"
+        :class="{'no-click':doctorMessage.online=='false'|| funArr.length==0}">
         立即咨询
       </div>
     </div>
@@ -444,9 +434,11 @@
     Qrcode,
     dateFormat
   } from "vux";
-
+  import terminal from "@/utils/terminal"
+  import evaluateItem from "@/components/evaluateItem";
   import cellInput from "@/components/cellInput";
   import chartInput from "@/components/chartInput";
+  import defaultImg from "@/assets/images/default-doctor.png"
   export default {
     data() {
       return {
@@ -477,13 +469,15 @@
         doctorMessage: [],
         evaluateArr: [],
         isGood: false,
-        isRefer:false,funArr:[]
+        isRefer: false,
+        funArr: []
       };
     },
     components: {
       Qrcode,
       cellInput,
-      chartInput
+      chartInput,
+      evaluateItem
 
     },
     mounted() {
@@ -505,12 +499,33 @@
         return this.$store.state.userId
       }
     },
+    beforeRouteEnter(to, from, next) {
+      console.log(to);
+      console.log(from);
+      next(vm => {
+        if (from.path == "/") {
+          vm.getdoctorDetail();
+          vm.getDoctorFun();
+          vm.getDoctorEvaluate();
+          vm.getDoctorStatus();
+        }
+
+      });
+    },
     methods: {
       goSeek() {
         // 隐藏
         this.isShow = false;
         // 跳转
         this.changeJump("/addSicker", {});
+      },
+      // 错误图片处理
+      setErrorImg(e) {
+        console.log(e);
+        //  console.log(e.target.src);
+        e.target.src = defaultImg
+
+
       },
       // 手机录音功能
       getUserMedia() {
@@ -544,6 +559,9 @@
           if (res.code == 0) {
             this.doctorMessage = res.data;
             this.value = res.data.qrcode
+            // 开发先用311003 res.data.hospitalCode
+            this.$store.commit('saveHospitalCode', res.data.hospitalCode)
+
           }
         })
       },
@@ -554,8 +572,8 @@
           doctorId: this.$route.query.doctorId
         }).then(res => {
           console.log(res)
-          if(res.code==0){
-            this.funArr=res.data;
+          if (res.code == 0) {
+            this.funArr = res.data;
           }
         })
       },
@@ -569,35 +587,50 @@
         }).then(res => {
           // console.log(res)
           if (res.code == 0) {
-            res.data.forEach(v=>{
-              v.judgeLable=v.judgeLable.split(',');
+            res.data.forEach(v => {
+               if(v.patientName) v.patientName=this.coverName(v.patientName)
+              if (v.judgeLable) {
+                v.judgeLable = v.judgeLable.split(',');
+               
+               
+              }
+
             })
-             this.evaluateArr = res.data;
+            this.evaluateArr = res.data;
           }
         })
+      },
+      // 名字隐藏中间的汉字
+      coverName(str){
+      //  return   str.substr(0,1)+"*"+str.substr(str.length-1,str.length);
+       return   str.substr(0,1)+"**";
       },
       // 获取医生的关注状态
       getDoctorStatus() {
-        this.$post('doctor/isFollowByUserId', {
-          platformAccount: this.platformName,
-          // userId: this.userId,
-          doctorId: this.$route.query.doctorId
-        }).then(res => {
-          if (res.code == 0) {
-            this.isFocus = res.data.status=='1'?true:false
-          }
-        })
+        if (this.$store.state.token) {
+          this.$post('doctor/isFollowByUserId', {
+            platformAccount: this.platformName,
+            // userId: this.userId,
+            doctorId: this.$route.query.doctorId
+          }).then(res => {
+            if (res.code == 0) {
+              this.isFocus = res.data.status == '1' ? true : false;
+            }
+          })
+        }
+
       },
       // 关注医生
       followDoctor() {
-        if (this.userId) {
+        if (this.$store.state.token) {
+
           this.$post('doctor/followDoctor', {
             platformAccount: this.platformName,
             // userId: this.$route.query.userId,
             doctorId: this.$route.query.doctorId,
             isFollow: this.isFocus ? 0 : 1
           }).then(res => {
-            console.log(this.isFocus==true)
+            console.log(this.isFocus == true)
             if (res.code == 0) {
               console.log(this.isFocus)
               this.isFocus = !this.isFocus;
@@ -607,21 +640,30 @@
         } else {
           // !TODO 没有登录跳转登录
           // 跳转登录页面
+          // alert('go login')
+          window.terminal.toLogin()
         }
 
       },
-      jumpChart(item){ 
-          // if(this.doctorMessage.onLine=='false'){
-          //   this.$vux.toast.text('该医生暂未上线');
-          // }
-          // if(item.status=='0'){
-          //    this.$vux.toast.text('该功能暂未开通',"middle")
-          // }
-        // if(new Number(item.status) && this.doctorMessage.online=="true") {
-          this.changeJump('/addSicker',{funId:item.id,doctorId:this.doctorMessage.doctorId})
-        // }else{
-        //    this.$vux.toast.text('该功能暂未开通',"middle")
-        // }
+      jumpChart(item) {
+        console.log(this.doctorMessage.online);
+
+        if (this.doctorMessage.online == 'false') {
+          this.$vux.toast.text('该医生暂未上线');
+          return false;
+        }
+        if (item.status == '0') {
+          this.$vux.toast.text('该功能暂未开通', "middle")
+          return false;
+        }
+        if (new Number(item.status) && this.doctorMessage.online == "true") {
+          this.changeJump('/addSicker', {
+            funId: item.id,
+            price: item.presentPrice,
+            doctorId: this.doctorMessage.doctorId
+          })
+        }
+
       }
 
     }
@@ -632,6 +674,11 @@
   @import url('../../styles/doctorHome.less');
   @w: 656px;
   @h: 782px;
+
+  .no-click {
+    background-color: #c1c1c1 !important;
+    pointer-events: none;
+  }
 
   .co {
     width: @w;
@@ -761,9 +808,15 @@
       color: #333;
     }
   }
-  .active-online{
-    background-color:  rgba(42, 147, 226, 1)!important;
+
+  .active-online {
+    background-color: #fff !important;
+   
+    >p{
+       color:  #2A93E2 !important;
+    }
   }
+
   .docutor-home {
 
     >.go {
@@ -808,6 +861,7 @@
             width: 68px;
             height: 36px;
             border-radius: 18px;
+            color: #fff;
             background-color: #c2c2c2;
 
             >p {
@@ -824,14 +878,16 @@
           >figure {
 
             display: block;
-            
+
             width: 124px;
             height: 124px;
-            >img{
+
+            >img {
               width: 100%;
               height: 100%;
-              display: block;border-radius: 50%;
-              
+              display: block;
+              border-radius: 50%;
+
             }
           }
         }
@@ -849,6 +905,11 @@
                 color: #fff;
                 font-weight: bold;
                 margin-bottom: 20px;
+                >.title-name{
+                  font-size:28px;
+                  font-weight:400;
+                  color:rgba(255,255,255,1);
+                }
               }
             }
 
@@ -919,12 +980,18 @@
           flex: 1;
           text-align: center;
 
-          >img {
+          >figure {
             width: 90px;
             height: 90px;
             display: block;
             margin: 0 auto;
             margin-bottom: 15px;
+
+            >img {
+              max-width: 100%;
+              height: auto;
+              display: block;
+            }
           }
 
           >.consultative-title {
@@ -1060,6 +1127,11 @@
           }
 
           >.dis-inner {
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal !important;
+            -webkit-box-orient: vertical;
             font-size: 24px;
             color: #030e13;
             margin-top: 30px;
@@ -1259,7 +1331,7 @@
   }
 
   .icon-pinjia1 {
-    background-image: url("../../assets/images/inquiry/Wicon@2x.png")!important;
+    background-image: url("../../assets/images/inquiry/Wicon@2x.png") !important;
   }
 
   .icon-star {

@@ -1,20 +1,20 @@
 <template>
-  <div class="chart-buy">
-
-    <div class="chart-all-input" >
+  <div class="chart-buy" ref="fot">
+    <div class="chart-all-input" v-show="!childClose">
       <div class="chart-input">
         <div class="yuyin">
           <i class="icons1 funbg icon-chart-yuyin"></i>
         </div>
         <!-- 输入框 -->
-        <input type="text" v-model="sendMessage" v-on:keyup.enter="goSend" @focus.stop="onFocus" @blur="onBlur"/>
+        <!-- <input type="text" v-model="sendMessage" v-on:keyup.enter="goSend" @focus.stop="onFocus" @blur="onBlur"/> -->
+        <textarea name="" id="" cols="30" rows="5" v-model="sendMessage" v-on:keyup.enter="goSend" @focus.stop="onFocus"
+          @blur="onBlur" ref="input"></textarea>
         <!-- <span class="iconfont icon-biaoqing" @click="ge"></span> -->
         <!-- <span class="iconfont icon-tianjia"></span> -->
         <div class="yuyin send-style">
-          <i class="icons1 funbg icon-chart-add" v-if="!isButton" @click="sendCream" ></i>
+          <i class="icons1 funbg icon-chart-add" v-if="!isButton" @click="sendCream"></i>
           <div class="send-btn" v-else @click="goSend">发送</div>
         </div>
-        
       </div>
       <!-- <div class="biaoqing" >
         <div v-for="item in list" :key=item class="vux-center-h" @click="sendEmotion($event)">
@@ -24,22 +24,30 @@
       <!-- <span class="iconfont icon-tianjia"></span> -->
       <!-- 相机组件 -->
       <div class="chart-cream" v-show="isShowCream">
-        <div class="item-chart-cream">
-
+        <div class="chart-box">
+          <div class="item-chart-cream">
           <i class="icons funbg icon-img-file"></i>
           <!-- 获取相册 -->
           <form id="uploadForm" enctype="multipart/form-data" method="post">
             <!-- <span class="iconfont icon-xiangji"></span> -->
-            <input type="file" accept="image/*" name="file" @focus.stop="onFocus" @blur="onBlur" capture="camera" @change="uploadImage()" class="imageBox"
-              v-if="isAndroid()" />
-            <input type="file" accept="image/*" name="file"  @blur="onBlur" @change="uploadImage()" class="imageBox" v-else>
+            <input type="file" accept="image/*" name="file" @focus.stop="onFocus" @blur="onBlur" capture="camera"
+              @change="uploadImage()" class="imageBox" v-if="isAndroid()" />
+            <input type="file" accept="image/*" name="file" @blur="onBlur" @change="uploadImage()" class="imageBox"
+              v-else>
           </form>
-
-
         </div>
-
-        <div class="item-chart-cream" @click="showPosition('middle')"><i class="icons funbg icon-video-file"></i></div>
-        <div class="item-chart-cream" @click="isCloseChart=!isCloseChart"><i class="icons funbg icon-close-chart"></i>
+          <p class="funName"> 发送图片</p>
+        </div>
+        <div class="chart-box">
+          <div class="item-chart-cream" @click="showPosition('middle')"><i class="icons funbg icon-video-file"></i>
+          
+          </div>
+          <p class="funName"> 发送视频</p>
+        </div>
+        <div class="chart-box">
+           <div class="item-chart-cream" @click="alertIsClose"><i class="icons funbg icon-close-chart"></i>
+        </div>
+       <p class="funName"> 结束咨询</p>
         </div>
         <!-- <input type="file" accept="image/*" capture="camera" > -->
       </div>
@@ -53,37 +61,112 @@
           </p>
           <p class="close-content">是否确认结束咨询？</p>
           <div class="btn-box">
-            <span>取消</span>
-            <span class="sure-active-btn" @click.stop="isCloseChart=!isCloseChart">确认</span>
+            <span @click.stop="cancleClose">取消</span>
+            <span class="sure-active-btn" @click.stop="closeChart">确认</span>
           </div>
         </div>
       </div>
     </div>
-
     <!-- 咨询完成  -->
+    <div class="buy-again" v-show="childClose">
+      <div class="doctor-message">
+        <!-- <div class="img-doc" :style="{backgroundImage:`url(${docMsg.doctorImg})`}" @error="setErrorImg">
+
+        </div> -->
+        <figure>
+          <img src="docMsg.doctorImg" alt="" @error="setErrorImg"/>
+        </figure>
+        <div class="doc-add">
+          <span class="name">{{docMsg.doctorName}}</span>
+          <p>
+            {{docMsg.sectionName}} {{docMsg.titleName}}
+          </p>
+        </div>
+      </div>
+      <div class="a-buy vux-1px-l" @click="againBuy">
+        <span>
+          再次购买
+        </span>
+        <span>
+          （{{ payPrice}}元）
+        </span>
+      </div>
+    </div>
+
+
   </div>
 </template>
 <script>
+  import keybord from "@/utils/keyboard"
+  import defaultImg from "@/assets/images/default-doctor.png"
   export default {
     data() {
       return {
         sendMessage: '',
-        isShowCream: false, //相机弹出框，默认FALSE
-        // showPositionValue: false,
         position: 'default',
         listenMessage: {},
         imgs: [],
-    
-        isButton:false
+
+        isButton: false
       }
     },
     props: {
       isCloseChart: {
         type: Boolean,
         default: false,
+      },
+      isShowCream: {
+        type: Boolean,
+        default: false,
+      },
+      childClose: {
+        type: Boolean,
+        default: false
+      },
+      docMsg: {
+        type: Object,
+        default () {
+          return {}
+        }
+      },
+      payPrice: {
+        type: Number,
+        default: 0
       }
-    
+
     },
+    mounted() {
+      // var bodyHeight = document.body.scrollHeight;
+
+      // window.onresize = function () {
+
+      //   var scrolledHeight = bodyHeight - document.body.scrollHeight;
+
+      //   if (scrolledHeight > 0) {
+
+      //     self.bottomButtonShow = false;
+
+      //     setTimeout(function () {
+
+      //       var pannel = self.$refs.deviceModelPannel;
+
+      //       pannel.scrollIntoView(true);
+
+      //       pannel.scrollIntoViewIfNeeded();
+
+      //     }, 50);
+
+      //   } else {
+
+      //     self.bottomButtonShow = true;
+
+      //   }
+
+      // };
+
+    },
+
+
     methods: {
       //判断是iOS 韩式android 手机
       isAndroid() {
@@ -94,38 +177,85 @@
       },
       // 
 
-      onFocus(){
+      onFocus() {
         // console.log("聚焦")
-        this.isButton=true
+        this.isButton = true
+        // keybord.listenKeybord(this.$refs.input)
+
+        // setInterval(() => {
+        //   this.$refs.input.scrollIntoView(true);
+        //   console.log();
+
+        // }, 200)
+
+
       },
-      onBlur(){
-        if(!this.sendMessage){
-          this.isButton=false
+      onBlur() {
+        if (!this.sendMessage) {
+          this.isButton = false
         }
-        
+
       },
       // 点击发送
       goSend() {
-        if(this.sendMessage.toString()==""){
-            this.$vux.toast.text('请输入内容',"middel")
-        }else{
-          this.$emit('goSend',{msg:this.sendMessage,msgType:"1"});
-          this.sendMessage=""
+        if (this.sendMessage.toString() == "") {
+          this.$vux.toast.text('请输入内容', "middel")
+        } else {
+          this.$emit('goSend', {
+            msg: this.sendMessage,
+            msgType: "1"
+          });
+          this.sendMessage = ""
         }
-          
+
       },
+      // 弹出是for关闭
+      alertIsClose() {
+        this.$emit('alertIsClose', this.isCloseChart)
+      },
+      // 关闭聊天
+      closeChart() {
+        this.$emit('closeChart', {
+          isCloseChart: this.isCloseChart,
+          set: 1
+        })
+      },
+      // 取消关闭
+      cancleClose() {
+        this.$emit('closeChart', {
+          isCloseChart: this.isCloseChart,
+          set: 0
+        })
+      },
+
       sendCream() {
-        this.isShowCream = !this.isShowCream
-      
+        // this.isShowCream = !this.isShowCream
+
         this.$emit('showCream', this.isShowCream)
       },
       showPosition(position) {
-       this.$vux.toast.text('开发中')
+        this.$vux.toast.text('开发中')
       },
-    
+      // 再一次购买
+      againBuy() {
+        this.$router.replace({
+          path: '/doctorHome',
+          query: {
+            doctorId: this.docMsg.doctorId
+          }
+        })
+      },
+      setErrorImg(e) {
+        console.log(e);
+        //  console.log(e.target.src);
+        e.target.src = defaultImg
+
+
+      },
+
       //上传图片
       uploadImage() {
-         let imgData = {
+        let imgData = {
           accept: 'image/gif, image/jpeg, image/png, image/jpg',
         }
         let reader = new FileReader();
@@ -145,19 +275,33 @@
         let form = new FormData();
         form.append('file', img1, img1.name);
         //!TODO 测试服务器，正式，需要填写正式服务器地址
-        this.$post(this.$store.state.uploadUrl , form).then((res) => {
-            // console.log(res);
-            if(res.code==0){
-               this.$emit('goSend', {msg:res.data.path,msgType:"4"});
-               this.isShowCream=false;
-            }
+        // alert(this.$store.state.uploadUrl)
+        this.$post(this.$store.state.uploadUrl, form).then((res) => {
+
+          // console.log(res);
+          if (res.code == 0) {
+            this.$emit('goSend', {
+              msg: res.data.path,
+              msgType: "4"
+            });
+            //  this.isShowCream=false;
+            this.sendCream()
+          }
         })
-      }
+      },
+
     },
   }
 
 </script>
 <style lang="less" scoped>
+  .funName{
+font-size:24px;
+font-weight:500;
+color:#6D7074;
+margin-top: 15px;
+text-align: center;
+  }
   .bgimg(@bgw, @bgh) {
     width: @bgw;
     height: @bgh;
@@ -168,11 +312,13 @@
     margin-left: -@bgw/2;
     margin-top: -@bgh/2;
   }
-.send-style{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
+  .send-style {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .icons {
     .bgimg(54px, 54px);
 
@@ -212,19 +358,20 @@
     background: #fff;
     // padding: 0 15px;
     display: flex;
-    height: 106px;
+    height: 120px;
     flex-direction: row;
     justify-content: center;
     align-items: center;
 
-    &>input[type="text"] {
+    &>input[type="text"],
+    &>textarea {
       font-size: 28px;
-      padding: 0 15px;
-      width: 530px-30;
+      padding: 15px 15px;
+      width: 510px-30;
       border: none;
       outline: none;
       //   padding-left: 15px;
-      height: 70px;
+      height: 70px-30;
       border-radius: 6px;
       margin: 0 auto;
       background-color: #EDEDED;
@@ -233,9 +380,10 @@
     >.yuyin {
       width: 15%;
       position: relative;
-      >.send-btn{
+
+      >.send-btn {
         position: relative;
-        width: 50px;
+        // width: 50px;
         height: 50px;
         text-align: center;
         font-size: 24px;
@@ -272,6 +420,7 @@
     height: @borderWidth;
     background-color: #EDEDED;
     padding: 0 30px;
+    >.chart-box{
 
     &>.item-chart-cream {
       position: relative;
@@ -307,8 +456,8 @@
       }
 
     }
-
-    >.item-chart-cream:not(:first-child) {
+  }
+    >.chart-box:not(:first-child) {
       margin-left: 69px;
     }
   }
@@ -395,58 +544,63 @@
     box-shadow: 0px -1px 0px 0px rgba(230, 230, 230, 1);
     justify-content: space-between;
     align-items: center;
-   position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #fff;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+
     >.doctor-message {
-     
-        margin-left: 20px;
-        display: flex;
-          align-items: center;
-          justify-content: space-between;
-      &::before {
-        content: "";
-        background-image: url('../assets/images/inquiry/head.jpg');
+
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &>figure {
         width: 80px;
         height: 80px;
         display: block;
         margin-right: 18px;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        border-radius: 50%;
+        >img{
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          display: block;
+        }
       }
 
       >.doc-add {
-          display: flex;
-          flex-direction: column;
+        display: flex;
+        flex-direction: column;
+        color: #333;
+        font-size: 24px;
+
+
+        >.name {
           color: #333;
-          font-size: 24px;
-          
-          
-          >.name{
-              color: #333;
-              font-size: 34px;
-              font-weight: bold;
+          font-size: 34px;
+          font-weight: bold;
 
-          }
+        }
 
 
-      } 
-    
-    }
-      >.a-buy{
-          margin-right: 20px;
-          display: flex;
-          flex-direction: column;
-          font-size: 24px;
-          color: #01ABFF;
-          >span:first-child{
-              font-size: 34px;
-          }
       }
+
+    }
+
+    >.a-buy {
+      padding-left: 55px;
+      margin-right: 20px;
+      display: flex;
+      flex-direction: column;
+      font-size: 24px;
+      color: #01ABFF;
+
+      >span:first-child {
+        font-size: 34px;
+      }
+    }
   }
 
 </style>

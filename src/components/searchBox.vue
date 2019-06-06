@@ -1,21 +1,24 @@
 <template>
-  <div class="search vux-1px-b"  @click="focusInput">
-    <div class="no-focus" v-show="!isFocus" >
+  <div class="search " @click="focusInput">
+    <div class="no-focus" v-show="!isFocus">
       <span class="funbg icon-search"></span>
       <span class="place-text">搜索科室和医生</span>
     </div>
     <div class="yes-focus" v-show="isFocus">
 
       <div class="input-box">
-        <input type="text" :value="value"  @input="searching($event.target.value)" v-focus @click.stop="searchResult" />
+        <input type="text" @input="searching($event.target.value)"  v-focus @click.stop="searchResult"
+          ref="searchBody"  @change="onChange"/>
+        <!-- <input type="text" v-model="searchValue" v-focus @click.stop="searchResult" /> -->
         <span class="funbg icon-search"></span>
         <div class="close-btn" @click.stop="emptyContent">
-           <span class="iconfont icon-baseline-close-px"></span>
+          <span class="iconfont icon-baseline-close-px"></span>
         </div>
-        
+
       </div>
       <span class="cancle" @click.stop="cancleHandle"> 取消</span>
     </div>
+   
   </div>
 </template>
 <script>
@@ -25,32 +28,35 @@
         type: Boolean,
         default: false
       },
-      value:{
-        type:String,
-        default:""
-      }
-      
+      // value: {
+      //   type: String,
+      //   default: ""
+      // }
+
 
     },
-    data(){
-      return{
-        searchInner:"",
-        searchValue:""
+    data() {
+      return {
+        searchValue: ""
       }
     },
-    directives:{
-      focus:{
-        inserted(el){
+    directives: {
+      focus: {
+        inserted(el) {
           el.focus()
         }
       }
     },
-    mounted(){
+    model: {
+      prop: "value", //绑定的值，通过父组件传递
+      event: "onInput" //自定义时间名
+    },
+    mounted() {
       console.log(this.value)
     },
-    watch:{
-      searchValue(newValue){
-        if(newValue){
+    watch: {
+      searchValue(newValue) {
+        if (newValue) {
           // console.log(newValue);
           //  this.$emit('PZsearch',newValue);
         }
@@ -60,32 +66,37 @@
       focusInput() {
         this.$emit('focusHandler', this.isFocus)
       },
-      searchResult(){
+      searchResult() {
         console.log('click')
       },
-      emptyContent(){
-        this.searchValue=""
+      emptyContent() {
+        console.log(this.fromValue);
+        console.log(this.$refs.searchBody.value);
+
+        // this.$emit('emptyValue',this.$refs.searchBody.value)
+        this.$refs.searchBody.value = ""
       },
-      cancleHandle(){
-        this.$emit('cancleHandle',this.isFocus)
+      cancleHandle() {
+        this.$emit('cancleHandle', this.isFocus)
       },
-      searching1(){
-        console.log(this.searchValue)
+      searching1() {
+        // console.log(this.searchValue)
         // this.$emit('pzSearch',this.searchValue);
         console.log('change');
-        
-        this.$emit('input', '222222');
-        
-      }, 
-      searching(val){
-        // console.log('change')
-        // console.log(event.target.value)
-        // this.searchValue=event.target.value;
-        // console.log(this.searchValue)
-        this.$emit('input',val);
-        // this.$emit('input', '222222');
+
+        this.$emit('oninput', '222222');
+
       },
-      jump(){
+      searching(val) {
+        console.log(this.value);
+        console.log(12121212212);
+        
+        this.$emit('onInput', val);
+      },
+      onChange(){
+        this.$emit('onChange' )
+      },
+      jump() {
         this.changeJump('/indexSearch')
       }
     }
@@ -146,8 +157,9 @@
 
       >.input-box {
         position: relative;
+
         >input[type="text"] {
-          padding:0 29+32+15px 0 29+26+19px; 
+          padding: 0 29+32+15px 0 29+26+19px;
           background: rgba(235, 235, 235, 1);
           border-radius: 37px;
           width: 600px-29-26-19-29-32-15;
@@ -159,14 +171,15 @@
           color: #333;
           font-weight: 400;
         }
-        >.close-btn{
+
+        >.close-btn {
           width: 32px;
           height: 32px;
           border-radius: 50%;
           background-color: #B3B3B3;
-         
+
           text-align: center;
-        
+
           color: #fff;
           position: absolute;
           right: 29px;
@@ -175,9 +188,10 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          >span{
-            color: #fff; 
-            font-size: 26px;  
+
+          >span {
+            color: #fff;
+            font-size: 26px;
           }
 
         }

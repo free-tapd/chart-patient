@@ -11,7 +11,9 @@ export default new Vuex.Store({
     platformName:"jkhb",
     userId: "1",
     hospitalCode:"311003",
-    uploadUrl:"http://192.168.1.141:8888/attachment/upload",
+    // uploadUrl:"http://192.168.1.141:8888/attachment/upload", //开发
+    // uploadUrl:"https://mid.jiankanghebei.com/zt/file/upload",//正式
+    uploadUrl:"https://qfkj.jiankanghebei.com/zt/file/upload",//测试
     token:"",
     patientId:'123323',
     chartPannelList:[],
@@ -28,7 +30,8 @@ export default new Vuex.Store({
     },
     searchInner:[],
     picCase:[],//上传病例照片
-    backurl:'http://192.168.0.148:8080/vue/#/addSicker?funId=7&doctorId=3&token='
+    backurl:'http://192.168.0.148:8080/vue/#/addSicker?funId=7&doctorId=3&token=',
+    loginUrl:""
   },
   getters,
   actions,

@@ -11,8 +11,11 @@ import indexSearch1 from '@/page/index/indexSearch1';
 import evaluateList from '@/page/index/evaluateList';
 import queryReport from "@/page/index/queryReport"
 import queryReportList from "@/page/index/queryReportList"
+import queryReportList1 from "@/page/index/queryReportList1"
+import sureInquiry from "@/page/index/sureInquiry"
 // queryReportList
 // 模拟进入路由
+
 	import hosSection from "@/page/index/hosSection"
 
 // 引入问诊路由
@@ -40,7 +43,7 @@ let router= new Router({
 			path: '/mine',
 			component: Mine,
 			meta:{
-				title:"用户中心"
+				title:"我的"
 			}
 		},
 		{
@@ -91,7 +94,24 @@ let router= new Router({
 			meta:{
 				title:"检查报告"
 			}
+		},{
+			path:"/queryReportList1",
+			component:queryReportList1,
+			meta:{
+				title:"检验报告"
+			}
+		},{
+			path:"/sureInquiry",
+			component:sureInquiry,
+			meta:{
+				title:"问诊详情"
+			}
 		},
+		// ,{
+		// 	path:"*",
+		// 	redirect:"/index"
+			
+		// },
 		...inquiry,
 		...person
 		

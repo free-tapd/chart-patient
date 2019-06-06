@@ -2,16 +2,16 @@
   <div class="vg">
 
     <div class="search-inner" ref="searchs">
-      <searchBox :isFocus="isFocus" @focusHandler="focusHandler" :value="searchValue" @cancleHandle="cancleHandle"
-        @input="onInput" />
+      <searchBox :isFocus="isFocus" :value="searchValue" v-model.lazy.trim="searchValue" @focusHandler="focusHandler"
+        @emptyValue="emptyValue" @cancleHandle="cancleHandle" @onInput="onInput"  />
     </div>
     <!-- search history -->
     <div class="container" :style="{top:offset+'px'}">
       <div class="search-content">
         <div class="search-item">
           <p>相关科室</p>
-          <div class="off-list " v-for="(v,i) in searchResult.section" :key="i" v-if="searchResult.section.length>0"
-            @click="jumpSection(v)">
+          <div class="off-list vux-1px-b" v-for="(v,i) in searchResult.section" :key="i"
+            v-if="searchResult.section.length>0" @click="jumpSection(v)">
             <div class="off-name">{{v.name}}</div>
             <!-- <p class="off-inner">此处是妇产科简介。</p> -->
             <p class="icon-box">
@@ -30,9 +30,10 @@
 
         </div>
         <div class="search-item">
+          <!-- <p>{{searchValue}}</p> -->
           <p>相关医生</p>
-          <div class="off-list" v-for="(v,i) in searchResult.doctor" :key="i" v-if="searchResult.doctor.length>0"
-            @click="changeJump('/doctorHome',{doctorId:v.id})">
+          <div class="off-list vux-1px-b" v-for="(v,i) in searchResult.doctor" :key="i"
+            v-if="searchResult.doctor.length>0" @click="changeJump('/doctorHome',{doctorId:v.id})">
             <div class="off-name">{{v.name}}</div>
             <!-- <p class="off-inner">此处是医生科简介。</p> -->
             <p class="icon-box">
@@ -53,6 +54,7 @@
   import docutorItem from "@/components/docutorItem";
   import searchBox from "@/components/searchBox";
   import Xfooter from "@/components/footer"
+  import { debounce } from 'vux'
   import {
     Flexbox,
     FlexboxItem,
@@ -122,7 +124,18 @@
 
         }
       },
+      // onChange(){
+      //   alert(this.searchValue)
+      // },
+      emptyValue(msg) {
+        console.log('删除点击');
+        this.searchValue = msg
+        console.log(this.searchValue);
 
+        this.searchValue = ""
+        console.log(this.searchValue);
+
+      },
       chooseTag(item, j) {
         item.choose.cur = j
       },
@@ -144,9 +157,18 @@
         this.searchResult.doctor = [];
         this.searchResult.section = []
       },
-      // 搜索
-      onInput(val) {
-        this.$post('Patient/getDoctorOrSection', {
+      //防抖函数 
+      // debounce(fn, wait) {
+      //   var timeout = null;
+      //   return function () {
+      //     if (timeout !== null)
+      //       clearTimeout(timeout);
+      //     timeout = setTimeout(fn, wait);
+      //   }
+      // },
+      handleSearch(val){
+        // 执行函数
+              this.$post('Patient/getDoctorOrSection', {
           platformAccount: this.platformName,
           search: val
         }).then(res => {
@@ -172,6 +194,10 @@
           }
         })
       },
+      // 搜索
+      onInput(val) {
+        this.debounce(this.handleSearch(val), 1000)
+      },
       // 科室条转
       jumpSection(item) {
         // this.changeJump('/indexSearch',{platformName:this.platformName,type:1,sectionId:item.id});
@@ -180,17 +206,17 @@
         this.changeJump('/indexSearch', {
           platformName: this.platformName,
           type: 2,
-          sectionId: item.sectionId,
+          sectionId: item.id,
           level: item.level
         });
         if (item.type = "section") {
           if (item.level == '1') {
-            this.saveTab({
+            this.$store.commit('saveTab', {
               firstSectionName: item.sectionName,
               firstSectionId: item.sectionId
             })
           } else {
-            this.saveTab({
+            this.$store.commit('saveTab', {
               secondSectionName: item.sectionName,
               secondSectionId: item.sectionId
             })

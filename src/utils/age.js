@@ -24,3 +24,15 @@ export const getAge = (identityCard) => {
   }
   return age;
 }
+
+export const isSex=(idCard)=>{
+  // 1 男 2女
+    //获取性别
+    if (parseInt(idCard.substr(16, 1)) % 2 == 1) {
+        //男
+  return 1;
+    } else {
+        //女
+  return 2;
+    }
+}

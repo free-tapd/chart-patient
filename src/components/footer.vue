@@ -3,24 +3,31 @@
     <ul class="tab-bar vux-1px-t">
       <li>
         <div class="img-box">
-          
-          <img slot="icon-active" src="../assets/images/inquiry/home_blue.png" v-if="selected==0">
+          <figure>
+             <img slot="icon-active" src="../assets/images/inquiry/home_blue.png" v-if="selected==0">
           <img slot="icon" src="../assets/images/inquiry/home.png" v-else>
+          </figure>
+         
         </div>
         <span slot="label"  :class="{'active-tab':selected==0}">首页</span>
       </li>
       <li>
         <div class="img-box">
-         
-          <img slot="icon-active" src="../assets/images/inquiry/msg_blue.png" v-if="selected==1">
+          <figure>
+            <img slot="icon-active" src="../assets/images/inquiry/msg_blue.png" v-if="selected==1">
            <img slot="icon" src="../assets/images/inquiry/msg.png" v-else>
+          </figure>
+          
         </div>
         <span slot="label"  :class="{'active-tab':selected==1}">消息</span>
       </li>
       <li>
         <div class="img-box">
-          <img slot="icon-active" src="../assets/images/inquiry/person_blue.png" v-if="selected==2">
+          <figure>
+            <img slot="icon-active" src="../assets/images/inquiry/person_blue.png" v-if="selected==2">
           <img slot="icon" src="../assets/images/inquiry/person.png" v-else>
+          </figure>
+          
         </div>
         <span slot="label" :class="{'active-tab':selected==2}">我的</span>
       </li>
@@ -102,16 +109,22 @@
       flex: 1;
       text-align: center;
       flex-direction: column;
-      justify-content: space-evenly;
+      justify-content: space-around;
       align-items: center;
       height: 100%;
 
       >.img-box {
-        >img {
+        >figure {
           width: 20*2px;
           height: 21*2px;
           display: block;
           margin: 0 auto;
+          >img{
+            width: 100%;
+          height: 100%;
+          display: block;
+          margin: 0 auto;
+          }
         }
       }
 

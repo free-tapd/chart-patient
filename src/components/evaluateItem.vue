@@ -10,9 +10,9 @@
         </div>
         <div class="discuess-inner flex-c vux-1px-b" >
           <div class="star-box flex-r">
-            <span>{{evaluateItem.patientName}}</span>
+            <span class="p-name">{{evaluateItem.patientName}}</span>
             <div class="star">
-              <span class="star-list funbg icon-star" v-for="star in new Number(evaluateItem.starts)" :key="star"></span>
+              <span class="star-list funbg icon-star" v-for="star in parseInt(evaluateItem.starts)" :key="star"></span>
               <!-- <span class="star-list funbg icon-star"></span>
               <span class="star-list funbg icon-star"></span>
               <span class="star-list funbg icon-star"></span>
@@ -40,7 +40,8 @@ export default {
                 return {}
             }
         }
-    }
+    },
+    
 }
 </script>
 
@@ -82,8 +83,11 @@ export default {
             justify-content: space-between;
             font-size: 24px;
             color: #999;
-
+            >.p-name{
+              flex: 2;
+            }
             >.star {
+              flex: 4;
               display: flex;
               align-items: center;
 
@@ -98,6 +102,9 @@ export default {
 
           >.dis-tag {
             margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            
 
             >span {
               background: rgba(242, 242, 242, 1);
@@ -107,18 +114,29 @@ export default {
               text-align: center;
               font-size: 24px;
               line-height: 36px;
+              margin-left: 18px;
+              margin-bottom: 15px;
             }
 
-            >span:not(:first-child) {
-              margin-left: 18px;
-            }
+            // >span:not(:first-child) {
+            //   margin-left: 18px;
+            // }
           }
 
           >.dis-inner {
+                text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal!important;
+    -webkit-box-orient: vertical;
             font-size: 24px;
             color: #030e13;
             margin-top: 30px;
           }
         }
       }
+
+       .icon-star {
+    background-image: url("../assets/images/gold_star.png")!important;
+  }
 </style>

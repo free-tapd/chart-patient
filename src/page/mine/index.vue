@@ -1,10 +1,10 @@
 <template>
   <div class="vg">
-    <div class="top" @click="changeJump('/userMessage',{})">
-      <img class="top1" src="../../assets/images/inquiry/head.jpg">
-      <div class="top2">李凯悦</div>
-      <div class="top3"><span>女</span><span>23岁</span></div>
-      <span class="to-right funbg"></span>
+    <div class="top" >
+      <img class="top1" src="../../assets/images/inquiry/default-patient.png">
+      <div class="top2">{{userMessage.userName}}</div>
+      <div class="top3"><span></span><span>{{userMessage.age}}岁</span></div>
+      <!-- <span class="to-right funbg"></span> -->
     </div>
     <div class="center">
       <div class="item" @click="changeJump('/patientList')">
@@ -23,7 +23,7 @@
         <div class="item3"><img src="../../assets/images/inquiry/array.png"></div>
       </div>
     </div>
-    <div class="center">
+    <div class="center" v-if="false">
       <div class="item" @click="changeJump('/feedback',{})">
         <div class="item1"><img src="../../assets/images/inquiry/my_manager.png"></div>
         <div class="item2">意见反馈</div>
@@ -35,14 +35,32 @@
   </div>
 </template>
 <script>
+import  {getAge} from "@/utils/age"
   import Xfooter from '@/components/footer'
   import adpat from "@/utils/adpat"
   export default {
     data() {
-      return {};
+      return {
+        userMessage:{}
+      };
     },
     components: {
       Xfooter
+    },
+    mounted(){
+      this.getUser();
+    },
+    methods:{
+      getUser(){
+        this.$get('getUser/getUserDetil').then(res=>{
+          if(res.code==0){
+            
+            this.$set(res.data,'age', getAge(res.data.idCardNo))
+            this.userMessage=res.data;
+            this.$store.commit('saveUserId',res.data.userId)
+          }
+        })
+      }
     }
   }
 

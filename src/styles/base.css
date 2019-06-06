@@ -253,11 +253,14 @@ ul body {
   margin-top: 30px;
 }
 .bg-image {
-  background-image: url('../assets/images/no-doctor.png');
+  background-image: url('../assets/images/no-doctor2.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
   display: block;
   width: 294px;
   height: 192px;
+}
+.no-data {
+  background-image: url('../assets/images/no-data.png');
 }

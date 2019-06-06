@@ -73,11 +73,15 @@
 // 左边
 .active-recivice {
   flex-direction: row !important;
-
-  >img {
+  >figure{
     padding-right: 20px !important;
     padding-left: 0 !important;
+
   }
+  // >img {
+  //   padding-right: 20px !important;
+  //   padding-left: 0 !important;
+  // }
 
   & .chart-inner {
     background-color: #fff !important;
@@ -89,8 +93,8 @@
   padding-bottom: 120px;
 
   >.chart {
-    padding: 0 30px;
-
+    padding:30px;
+    overflow-y: scroll;
     >.chart-item {
       display: flex;
       flex-direction: column;
@@ -109,12 +113,18 @@
         flex-direction: row-reverse;
         // align-items: center;
 
-        >img {
+        >figure {
           padding-left: 20px;
           width: 90px;
           height: 90px;
           display: block;
           border-radius: 50%;
+          >img{
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+
+          }
         }
 
         >.chart-inner-box {
@@ -127,7 +137,21 @@
           font-size: 30px;
           line-height: 44px;
           color: #fff;
-          word-break: break-all
+          word-break: break-all;
+          >.img-box{
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+           
+            >figure{
+              max-width: 50%;
+            height: auto;
+            >img{
+              width: 100%;
+              height: auto;
+            }
+            }
+          }
           }
           >.chart-img{
             // height: 275px;
@@ -258,13 +282,17 @@
     border-radius: 10px;
 
     >.text-box {
-      height: 256px-60;
+      height: 256+30px-60;
       padding: 30px 30px;
       background: rgba(240, 240, 240, 1);
-
+      padding-bottom: 60px;
+      position: relative;
       >.text-box2 {
         height: 100%;
-
+        &::after{
+          display: table;
+          content: '';
+        }
         >textarea {
           font-size: 30px;
           height: 100%;
@@ -276,7 +304,18 @@
           border-radius: 10px;
         }
       }
-
+      >.word-num{
+        display: inline-block;
+        position: absolute;
+        right: 30px;
+        bottom: 0px;
+        font-size:22px;
+        font-weight:400;
+        color:rgba(128,128,128,1);
+        line-height:91px;
+        text-align: right;
+        
+      }
     }
 
   }
@@ -288,7 +327,7 @@
     border-radius: 10px;
     position: absolute;
     left: 50%;
-    bottom: 47px;
+    bottom: 20px;
     margin-left: -340px;
 
     font-size: 34px;
@@ -387,7 +426,7 @@
 
   >.chart-message {
     margin: 0 auto;
-    padding: 30px;
+    padding: 10px 30px;
     width: 650px-60;
     background: rgba(255, 255, 255, 1);
     border: 1px solid rgba(230, 230, 230, 0.8);
@@ -472,7 +511,7 @@
 
   >.evaluate-result {
     width: 678px-30-30;
-    height: 165px-40;
+    min-height: 165px-40;
     background: rgba(206, 206, 206, 1);
     border-radius: 10px;
     display: flex;
@@ -481,10 +520,14 @@
     justify-content: space-between;
     padding: 20px 30px;
     margin-top: 60px;
+    >.help-btn-box{
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+        >.help-btn {
 
-    >.help-btn {
-
-      width: 140px;
+      // min-width: 140px;
+      padding: 0 5px;
       height: 60px;
       border: 1px solid #fff;
       border-radius: 4px;
@@ -493,7 +536,13 @@
       font-size: 28px;
       font-weight: 400;
       color: rgba(255, 255, 255, 1);
+      margin-bottom: 10px;
     }
+    >.help-btn:not(:first-child){
+      margin-left: 10px;
+    }
+    }
+  
 
     >.help-inner {
       font-size: 28px;
@@ -604,9 +653,14 @@
       align-items: flex-start;
       >.img-box{
         flex: 1;
+        >figure{
+          width: 40px;
+          height: 40px;
+          display: block;
+        }
         >img{
-        width: 40px;
-        height: 40px;
+        width: 100%;
+        height: 100%;
         display: block;
       }
       }

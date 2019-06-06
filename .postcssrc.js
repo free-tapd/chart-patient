@@ -15,7 +15,7 @@ module.exports = {
       viewportHeight: 1334,    // (Number) The height of the viewport.
       unitPrecision: 3,       // (Number) The decimal numbers to allow the REM units to grow to.
       viewportUnit: 'vw',     // (String) Expected units.
-      selectorBlackList: ['.ignore', '.hairlines', /^\.weui/, /^\.vux/, /^\.v-transfer-dom/,/\.dp-/,/\.scroller-/],  // (Array) The selectors to ignore and leave as px.
+      selectorBlackList: ['.ignore', '.hairlines', /^\.weui/, /^\.vux/, /^\.v-transfer-dom/,/\.dp-/,/\.scroller-/,/^\.mescroll/],  // (Array) The selectors to ignore and leave as px.
       minPixelValue: 1,       // (Number) Set the minimum pixel value to replace.
       mediaQuery: false       // (Boolean) Allow px to be converted in media queries.
     },

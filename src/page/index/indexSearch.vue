@@ -43,7 +43,10 @@
           <ul class="pannel-right">
             <!-- <li>全部医院</li> -->
             <li class="flex-r" v-for="(v,i) in hospitalArr" :key="i" @click="searchHospital(v)">
-              <img :src="v.hospitalLogo" :alt="v.hospitalName" style="font-size:12px;">
+              <figure>
+                <img :src="v.hospitalLogo" :alt="v.hospitalName" style="font-size:12px;">
+              </figure>
+              
               <div class="hospital-name">
                 <p>{{v.hospitalName}}</p>
                 <span>{{v.hospitalLevel}}</span>
@@ -88,7 +91,7 @@
               </li>
             </ul>
             <div class="choose-btn">
-              <span @click.stop="cur0=1">重置</span>
+              <span @click.stop="cur0=-1">重置</span>
               <span @click.stop="sureSearch">确定</span>
             </div>
           </div>
@@ -110,7 +113,7 @@
         <docutorItem v-for="(v,i) in doctorList" :doctorItem="v" :key="i" @doctorDetail="doctorDetail" />
         <div class="no-doctor" v-if="doctorList.length==0">
           <span class="bg-image"></span>
-          <span class="no-text"> 暂无数据</span>
+          <span class="no-text"> 暂无医生</span>
         </div>
       </div>
 
@@ -264,14 +267,15 @@
         twoSectionArr: [],
         areaArr: [],
         hospitalArr: [],
-        cur0: 0,
+        cur0: -1,
         professionalIndex: 0,
         professionalArr: [],
         twoCur1: 0,
         chooseItem: {
           id: 1,
           tab: "desc"
-        }
+        },
+        allOnlineDoctor:0
       };
     },
     components: {
@@ -305,12 +309,16 @@
       document.querySelector('.doctor-container').style.marginTop = this.offset + "px";
       let clientHeight =
         document.body.clientHeight || document.documentElement.clientHeight;
+        console.log('body');
+        
+        console.log(clientHeight);
+        
       let screenHeight = window.screen.availHeight;
       let searchBar = this.$refs.listTop.offsetHeight;
 
-
-      this.$refs.overHeight.style.height = (screenHeight - this.offset - searchBar) + 'px';
-      this.$refs.overHeight1.style.height = (screenHeight - this.offset - searchBar) + 'px';
+      /*ios clientHeight-1 解决底部超出手机浏览器*/ 
+      this.$refs.overHeight.style.height = (clientHeight-1 - this.offset - searchBar) + 'px';
+      this.$refs.overHeight1.style.height = (clientHeight-1- this.offset - searchBar) + 'px';
       document.querySelector('.doctor-box1').style.marginTop = this.offset + searchBar + "px";
       document.querySelectorAll('.pannel-search-hospital').forEach(v => {
         v.style.top = (this.offset + searchBar) + "px";
@@ -372,18 +380,15 @@
          * 
         */
 
-      //  默認
-        // if(this.tabMessage.secondSectionName){
-        //   // this.tabArr[0].title=this.tabMessage.secondSectionName;
-        //   this.twoSectionArr.forEach( (v,i)=>{
-        //     if(v.sectionId==this.tabMessage.secondSectionId){
-        //       this.twoCur1=i
-        //     }
-        //   })
-        // }
-        // if(this.tabMessage.hospitalName){
-        //   // this.upDataTab(1,this.tabMessage.hospitalName)
-        // }
+
+          if(level==2){
+             this.filterDoctor(sectionId)
+       
+          
+            this.upDataTab(0,this.tabMessage.secondSectionName)
+          }else{
+
+          }
 
       },
       // 选择标签
@@ -405,8 +410,13 @@
       sureSearch() {
         // order flag
         console.log(this.chooseItem);
-
-        this.filterDoctor("", "", this.chooseItem.tab, this.chooseItem.id)
+        if(this.cur0==-1){
+            this.cur=0;
+        }else{
+              this.filterDoctor( this.$store.state.tabMessage.secondSectionId, this.$store.state.tabMessage.hospitalId, this.chooseItem.tab, this.chooseItem.id)
+        
+        }
+        // this.filterDoctor("", "", this.chooseItem.tab, this.chooseItem.id)
       },
       focusHandler(msg) {
         this.changeJump('/indexSearch1');
@@ -436,11 +446,15 @@
         }).then(res => {
           // console.log(res)
           if (res.code == 0) {
-            res.data.unshift({
-              sectionName: "全部",
-              sectionId: ""
-            })
+            // res.data.unshift({
+            //   sectionName: "全部",
+            //   sectionId: ""
+            // })
+          
+           
             this.firSectionArr = res.data;
+            this.allOnlineDoctor=0
+            res.data.forEach(v=>{this.allOnlineDoctor+= parseInt(v.doctorOnline)})
             let {
               level,
               sectionId
@@ -471,9 +485,13 @@
           sectionId
         }).then(res => {
           if (res.code == 0) {
+              if(res.data.length==0){
+               this.$vux.toast.text('暂无数据')
+            }
             res.data.unshift({
               sectionName: "全部",
-              sectionId: ""
+              sectionId: "",
+              doctorOnline:this.allOnlineDoctor
             })
             this.twoSectionArr = res.data;
             // this.initIsHospital();
@@ -508,6 +526,9 @@
           cityId
         }).then(res => {
           if (res.code == 0) {
+              if(res.data.length==0){
+               this.$vux.toast.text('暂无数据')
+            }
             this.hospitalArr = res.data;
           }
         })
@@ -515,7 +536,7 @@
       // 点击一级菜单，获取二级菜单的内容
       clickHospital(item, index) {
         this.cur2 = index
-        this.getCityHospital(item.sectionId);
+        this.getCityHospital(item.cityId);
         this.saveTab({
           cityId:item.cityId,
           cityName:item.cityName
@@ -524,7 +545,8 @@
 
       // 根据条件筛选
       filterDoctor(sectionId = "", hospitalId = "", order = "", flag = "", titleId = "") {
-        
+        if(this.tabMessage.secondSectionId) sectionId=this.tabMessage.secondSectionId;
+        if(this.tabMessage.hospitalName) hospitalId=this.tabMessage.hospitalId
         this.$post('doctor/getDoctorList', {
           platformAccount: this.platformName,
           sectionId,
@@ -534,6 +556,7 @@
           titleId,
         }).then(res => {
           if (res.code == 0) {
+            this.doctorList=[];
             this.doctorList = res.data;
             this.cur = 0;
           }
@@ -542,23 +565,24 @@
       },
       // 點擊科室篩選條件
       searchSection(item){
-        
-          this.filterDoctor(item.sectionId)
-             this.saveTab({
+              this.saveTab({
             secondSectionName: item.sectionName,
             secondSectionId: item.sectionId
           })
+          this.filterDoctor(item.sectionId)
+       
           
           this.upDataTab(0,this.tabMessage.secondSectionName)
        
       },
       // 點擊醫院篩選醫院
       searchHospital(item){ 
-        this.filterDoctor("",item.hospitalId)
           this.saveTab({
             hospitalName: item.hospitalName,
             hospitalId: item.hospitalId
           })
+        this.filterDoctor("",item.hospitalId)
+        
           this.upDataTab(1,this.tabMessage.hospitalName)
        
       },
@@ -813,12 +837,17 @@
         padding: 19.5px 30px;
         position: relative;
 
-        >img {
+        >figure {
           width: 68px;
           height: 68px;
           display: block;
           border-radius: 50%;
           margin-right: 30px;
+          >img{
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
         }
 
         >.hospital-name {

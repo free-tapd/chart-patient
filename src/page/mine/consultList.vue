@@ -7,11 +7,11 @@
 
       <div class="c" v-if="loadingOrderList.length>0">
         <p class="going">进行中</p>
-        <chartList v-for="(v,i) in loadingOrderList" :key="i" :orderItem="v" @againChart="againChart" />
+        <chartList v-for="(v,i) in loadingOrderList" :key="i" :orderItem="v" @click.native="changeJump('/chartList',{orderNo:v.orderNo,orderId:v.id,roomId:v.orderNo,doctorId:v.doctorId})" />
       </div>
       <div class="c" v-if="overOrderList.length>0">
         <p class="going">已完成</p>
-        <chartList v-for="(v,i) in overOrderList" :key="i" :orderItem="v" />
+        <chartList v-for="(v,i) in overOrderList" :key="i" :orderItem="v" @click.native="changeJump('/chartList',{orderNo:v.orderNo,orderId:v.id,roomId:v.orderNo,doctorId:v.doctorId})" />
       </div>
 
     </mescroll-vue>
@@ -70,7 +70,8 @@
           orderState: "1",
         }).then(res => {
           res.data.forEach(v=>{
-            v.createTime = dateFormat(new Date(v.createTime), 'HH:mm:ss ');
+            v.orderCreateTime=v.orderCreateTime.replace(/\-/g,"/");
+            v.orderCreateTime = dateFormat(new Date( v.orderCreateTime), 'HH:mm:ss ');
           })
           this.loadingOrderList = res.data;
         })
@@ -91,7 +92,8 @@
             let totalPage=res.data.totalPage
             let curPageData=res.data.list
             opt.list.forEach(v => {
-              v.createTime = dateFormat(new Date(v.createTime), 'YYYY-MM-DD ');
+              v.orderCreateTime=v.orderCreateTime.replace(/\-/g,"/");
+              v.orderCreateTime = dateFormat(new Date(v.orderCreateTime), 'YYYY-MM-DD ');
             })
             // 如果是第一页需手动置空列表
             if (opt.totalPage == 1) {
@@ -145,7 +147,13 @@
           item
         })
       }
+
+    },
+    destroyed(){
+      // alert('离开')
+     this.mescroll.destroy();
     }
+
   }
 
 </script>
@@ -160,7 +168,7 @@
   /*通过fixed固定mescroll的高度*/
   .mescroll {
     position: fixed;
-    top: 44px;
+    top: 0;
     bottom: 0;
     height: auto;
   }
